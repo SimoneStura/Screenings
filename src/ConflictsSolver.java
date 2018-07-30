@@ -1,13 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Graph<E> {
+public class ConflictsSolver<E> {
+	private static int numberVars = 0;
 	
-	private ArrayList<E> nodes = new ArrayList<>();
-	private ArrayList<Boolean> obscurated = new ArrayList<>();
+	private ArrayList<E> vars = new ArrayList<>();
 	private ArrayList<Edge> edges = new ArrayList<>();
 
-	public Graph() {}
+	public ConflictsSolver() {}
 	
 	public void add(E e) {
 		int index = nodes.indexOf(e);
@@ -77,78 +77,6 @@ public class Graph<E> {
 		}
 		return confl;
 	}
-	
-	public boolean isCyclic() {
-		boolean visited[] = new boolean[nodes.size()];
-		for(int j = 0; j < visited.length; j++) 
-			visited[j] = false;
-		for(int i = 0; i < visited.length; i++)
-			if(!visited[i] && !obscurated.get(i))
-				if(isCyclicAux(i, visited, -1))
-					return true;
-		return false;
-	}
-	
-	private boolean isCyclicAux(int v, boolean visited[], int parent) {
-		visited[v] = true;
-		
-		for(int i = 0; i < edges.size(); i++) {
-			Edge ed = edges.get(i);
-			int adj = ed.adjacent(v);
-			if(adj >= 0) {
-				if(visited[adj]) {
-					if(adj != parent)
-						return true;
-				} else if(isCyclicAux(adj, visited, v))
-					return true;
-			}
-		}
-		return false;
-	}
-	
-	public List<E> cyclic() {
-		boolean visited[] = new boolean[nodes.size()];
-		for(int j = 0; j < visited.length; j++) 
-			visited[j] = false;
-		for(int i = 0; i < visited.length; i++)
-			if(!visited[i] && !obscurated.get(i)) {
-				ArrayList<E> cycle = new ArrayList<>(nodes.size());
-				if(cyclicAux(i, visited, -1, cycle))
-					return cycle;
-			}
-		return null;
-	}
-	
-	private boolean cyclicAux(int v, boolean visited[], int parent, List<E> cycle) {
-		visited[v] = true;
-		
-		for(int i = 0; i < edges.size(); i++) {
-			Edge ed = edges.get(i);
-			int adj = ed.adjacent(v);
-			if(adj >= 0 && !obscurated.get(adj)) {
-				if(visited[adj]) {
-					if(adj != parent) {
-						cycle.add(nodes.get(adj));
-						cycle.add(nodes.get(v));
-						return true;
-					}
-				} else if(cyclicAux(adj, visited, v, cycle)) {
-					cycle.add(nodes.get(v));
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	public List<E> notObscurated() {
-		List<E> no = new ArrayList<>();
-		for(int i = 0; i < nodes.size(); i++) {
-			if(obscurated.get(i)) continue;
-			no.add(nodes.get(i));
-		}
-		return no;
-	}
 
 	public static void main(String[] args) {
 		Graph<String> g1 = new Graph<>();
@@ -174,26 +102,28 @@ public class Graph<E> {
 	    System.out.println(g1.notObscurated());
 	}
 	
-	private class Edge {
-		private int i1;
-		private int i2;
+	private class Variable {
+		private E value;
+		private int index;
+		private int conflicts = 0;
 		
-		Edge(int i1, int i2) {
-			this.i1 = i1;
-			this.i2 = i2;
+		Variable(E value) {
+			this.value = value;
+			index = ++numberVars;
 		}
 		
 		public boolean equals(Object o) {
-			if(!(o instanceof Graph.Edge)) return false;
-			Edge e = (Edge) o;
-			return (i1 == e.i1 && i2 == e.i2)
-					|| (i1 == e.i2 && i2 == e.i1);
+			if(o instanceof ConflictsSolver.Variable) {
+				Variable e = (Variable) o;
+				return this.index == e.index;
+			}
+			return false;
 		}
-		
-		public int adjacent(int v) {
-			if(i1 == v) return i2;
-			if(i2 == v) return i1;
-			return -1;
+
+		public int compareTo(Variable other) {
+			if(this.conflicts == other.conflicts)
+				return this.index - other.index;
+			return this.conflicts - other.conflicts;
 		}
 	}
 }
