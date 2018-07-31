@@ -5,7 +5,7 @@ public class FilmFestival {
 	private TreeSet<Screening> shows = new TreeSet<>((Screening s1, Screening s2) -> s1.compareTo(s2));
 	private ArrayList<Movie> movies = new ArrayList<>();
 	private HashMap<Movie,ArrayList<Screening>> screens = new HashMap<>();
-	public Graph<Screening> conflicts = new Graph<>();
+	private ConflictsSolver<Screening> conflicts = new ConflictsSolver<>();
 	
 	public FilmFestival() {}
 	
@@ -17,10 +17,12 @@ public class FilmFestival {
 				movies.add(m);
 				screens.put(m, new ArrayList<>(3));
 			}
-			screens.get(m).add(s);
+			List<Screening> screenGroup = screens.get(m);
+			screenGroup.add(s);
+			conflicts.setGroup(screenGroup);
 			for(Screening screen : shows)
 				if(!(screen.getM().equals(m)) && Screening.isConflict(s, screen))
-					conflicts.addEdge(screen, s);
+					conflicts.addConflict(screen, s);
 		}
 		return ctrl;
 	}
@@ -36,7 +38,7 @@ public class FilmFestival {
 	public Map<Movie,ArrayList<Screening>> getScreens() {
 		return screens;
 	}
-	
+	/*
 	public List<Movie> conflicting(Movie m) {
 		if(m == null) return null;
 		ArrayList<Movie> confl = new ArrayList<>();
@@ -74,7 +76,7 @@ public class FilmFestival {
 		}
 		return g;
 	}
-	
+	*/
 	public static void main(String[] args) {
 		FilmFestival tff = new FilmFestival();
 		Movie m = new Movie("God Bless The Child", 2015, 92);
@@ -174,6 +176,13 @@ public class FilmFestival {
 		cal.set(2015,10,23,9, 0);
 		tff.addScreen(new Screening(m, cal.getTime()));
 		
+		List<Screening> bestSol = tff.conflicts.bestSolution();
+		Collections.sort(bestSol);
+		for(Screening s : bestSol) {
+			System.out.print(s);
+			System.out.println("  -  " + s.getM());
+		}
+		
 //		for(Screening screen : tff.getShows())
 //			System.out.println(screen + " " + screen.getM());
 		/*
@@ -183,7 +192,7 @@ public class FilmFestival {
 				System.out.println("\t" + screen);
 			System.out.println();
 		}
-		*/
+		
 		//tff.conflicts.choose(ch1);
 		//tff.conflicts.choose(ch2);
 		List<Screening> list = tff.conflicts.cyclic();

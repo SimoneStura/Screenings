@@ -19,15 +19,31 @@ public class ConflictsSolver<E> {
 	}
 	
 	public void setGroup(List<E> groupEl) {
-		int group = numGroups++;
+		int group = -1;
+		for(E e : groupEl) {
+			if(!mapEV.containsKey(e)) {
+				add(e);
+				continue;
+			}
+			Variable v = mapEV.get(e);
+			for(int i = 0; i < varsGroup.size(); i++)
+				if(varsGroup.get(i).contains(v)) {
+					group = i;
+					break;
+				}
+		}
+		if(group < 0)	
+			group = numGroups++;
 		ArrayList<Variable> g = new ArrayList<>();
 		for(E el : groupEl) {
-			add(el);
 			Variable v = mapEV.get(el);
 			v.group = group;
 			g.add(v);
 		}
-		varsGroup.add(g);
+		if(group >= varsGroup.size())
+			varsGroup.add(g);
+		else
+			varsGroup.set(group, g);
 	}
 	
 	public void addConflict(E e1, E e2) {
@@ -124,13 +140,15 @@ public class ConflictsSolver<E> {
 	public static void main(String[] args) {
 		ConflictsSolver<String> g1 = new ConflictsSolver<>();
 	    List<String> a = new ArrayList<>();
-	    a.add("a1"); a.add("a2");
+	    a.add("a1");
 	    List<String> b = new ArrayList<>();
 	    b.add("b1"); b.add("b2");
 	    List<String> c = new ArrayList<>();
 	    c.add("c1"); c.add("c2");
 	    List<String> d = new ArrayList<>();
 	    d.add("d1"); d.add("d2");
+	    g1.setGroup(a);
+	    a.add("a2");
 	    g1.setGroup(a);
 	    g1.setGroup(b);
 	    g1.setGroup(c);
@@ -149,10 +167,6 @@ public class ConflictsSolver<E> {
 	    g1.addConflict("c2", "d2");
 	    
 	    System.out.println(g1.bestSolution());
-	    System.out.println("forzo d1");
-	    System.out.println(g1.bestSolution("d1"));
-	    System.out.println("forzo d2");
-	    System.out.println(g1.bestSolution("d2"));
 	}
 	
 	private class Conflict {
@@ -194,7 +208,6 @@ public class ConflictsSolver<E> {
 		
 		void obscure(boolean b) {
 			obscured = b;
-			chosen = false;
 		}
 		
 		void choose(boolean b) {
@@ -203,7 +216,10 @@ public class ConflictsSolver<E> {
 			for(Variable v : conflicts)
 				v.obscure(b);
 			for(Variable v : varsGroup.get(group))
-				if(this.compareTo(v) < 0) v.obscure(b);
+				if(this.compareTo(v) < 0) {
+					v.chosen = b;
+					v.obscured = b;
+				}
 		}
 		
 		public String toString() {

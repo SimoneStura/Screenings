@@ -2,7 +2,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-public class Screening {
+public class Screening implements Comparable<Screening>{
 	private Movie m;
 	private Date startTime;
 	private Date endTime;
