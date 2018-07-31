@@ -4,34 +4,36 @@ import java.util.List;
 
 public class ConflictsSolver<E> {
 	private static int numberVars = 0;
-	
-	private HashMap<E,Variable> map = new HashMap<>();
+
+	private HashMap<E,Variable> mapEV = new HashMap<>();
+	private HashMap<Variable,E> mapVE = new HashMap<>();
 	private ArrayList<Variable> vars = new ArrayList<>();
+	private ArrayList<Conflict> confl = new ArrayList<>();
 
 	public ConflictsSolver() {}
 	
 	public void add(E e) {
-		if(!map.containsKey(e))
-			map.put(e, new Variable());
+		if(mapEV.containsKey(e)) return;
+		Variable v = new Variable();
+		mapEV.put(e,v);
+		mapVE.put(v,e);
+		vars.add(v);
 	}
 	
-	public void addEdge(E e1, E e2) {
-		if(!map.containsKey(e1))
-			map.put(e1, new Variable());
-		if(!map.containsKey(e2))
-			map.put(e2, new Variable());
-		Variable v1 = map.get(e1);
-		Variable v2 = map.get(e2);
-		v1.addConfl(v2.index);
-		v2.addConfl(v1.index);
+	public void addConflict(E e1, E e2) {
+		add(e1);
+		add(e2);
+		Conflict c = new Conflict(mapEV.get(e1), mapEV.get(e2));
+		if(confl.contains(c)) return;
+		confl.add(c);
 	}
 	
 	public boolean hasEdge(E e1, E e2) {
-		return map.get(e1).conflicts.contains(e2);
+		return mapEV.get(e1).conflicts.contains(e2);
 	}
 
 	public boolean contains(Object arg0) {
-		return map.containsKey(arg0);
+		return mapEV.containsKey(arg0);
 	}
 
 	public boolean isEmpty() {
@@ -51,35 +53,60 @@ public class ConflictsSolver<E> {
 		return confl;
 	}
 	
-	public void bestSolution() {
-		
+	public List<E> bestSolution() {
+		return bestSolution(new ArrayList<>(), 0, 0);
+	}
+	
+	private List<E> bestSolution(List<Variable> s, int z, int x) {
+		return null;
 	}
 
 	public static void main(String[] args) {
 		ConflictsSolver<String> g1 = new ConflictsSolver<>();
-	    g1.addEdge("a1", "b1");
-	    g1.addEdge("a1", "d1");
-	    g1.addEdge("a2", "b2");
-	    g1.addEdge("a2", "c1");
-	    g1.addEdge("a2", "d1");
-	    g1.addEdge("a2", "d2");
-	    g1.addEdge("b1", "c1");
-	    g1.addEdge("b1", "d1");
-	    g1.addEdge("b2", "c2");
-	    g1.addEdge("b2", "d2");
-	    g1.addEdge("c1", "d1");
-	    g1.addEdge("c2", "d2");
+	    g1.addConflict("a1", "b1");
+	    g1.addConflict("a1", "d1");
+	    g1.addConflict("a2", "b2");
+	    g1.addConflict("a2", "c1");
+	    g1.addConflict("a2", "d1");
+	    g1.addConflict("a2", "d2");
+	    g1.addConflict("b1", "c1");
+	    g1.addConflict("b1", "d1");
+	    g1.addConflict("b2", "c2");
+	    g1.addConflict("b2", "d2");
+	    g1.addConflict("c1", "d1");
+	    g1.addConflict("c2", "d2");
+	}
+	
+	private class Conflict {
+		Variable v1;
+		Variable v2;
+		
+		Conflict(Variable v1,Variable v2) {
+			this.v1 = v1;
+			this.v2 = v2;
+		}
+		
+		public boolean equals(Object o) {
+			if(o instanceof ConflictsSolver<?>.Conflict) {
+				@SuppressWarnings("unchecked")
+				Conflict c = (Conflict) o;
+				return (v1.equals(c.v1) && v2.equals(c.v2)) ||
+						(v1.equals(c.v2) && v2.equals(c.v1));
+			}
+			return false;
+		}
 	}
 	
 	private class Variable implements Comparable<Variable> {
-		private int index;
-		private ArrayList<Integer> conflicts = new ArrayList<>();
+		int index;
+		boolean chosen = false, obscurated = false;
+		ArrayList<Variable> conflicts = new ArrayList<>();
 		
 		Variable() {
 			index = ++numberVars;
 		}
 		
-		public void addConfl(int v) {
+		void addConfl(Variable v) {
 			if(conflicts.contains(v)) return;
 			conflicts.add(v);
 		}
