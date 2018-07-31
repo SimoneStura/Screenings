@@ -53,21 +53,37 @@ public class ConflictsSolver<E> {
 		return bestSolution(vars, new ArrayList<>(), new ArrayList<>());
 	}
 	
+	public List<E> bestSolution(E forced) {
+		Collections.sort(vars);
+		Variable v = mapEV.get(forced);
+		List<Variable> chosen = new ArrayList<>();
+		v.chosen = true;
+		chosen.add(v);
+		for(Conflict c : confl) {
+			if(c.v1.compareTo(c.v2) <= 0)
+				c.v1.conflicts.add(c.v2);
+			else
+				c.v2.conflicts.add(c.v1);
+			if(c.v1.equals(v))
+				c.v2.obscure(true);
+			else if(c.v2.equals(v))
+				c.v1.obscure(true);
+		}
+		return bestSolution(vars, chosen, new ArrayList<>());
+	}
+	
 	private List<E> bestSolution(List<Variable> toChoose, List<Variable> chosen, List<E> currentBest) {
 		Variable v = null;
 		int indexStart = -1, indexEnd = -1;
-		for(int i = 0; i < toChoose.size(); i++)
-			if(!toChoose.get(i).obscured) {
+		for(int i = 0; i < toChoose.size(); i++) {
+			Variable tmp = toChoose.get(i);
+			if(!tmp.obscured && !tmp.chosen) {
 				if(indexStart < 0) {
-					v = toChoose.get(i);
+					v = tmp;
 					indexStart = i+1;
 				}
 				indexEnd = i+1;
 			}
-		if(v != null && indexStart == indexEnd) { //only 1 element left and it is not obscured
-			v.choose(true);
-			chosen.add(v);
-			v = null;
 		}
 		if(v == null) {
 			if(chosen.size() > currentBest.size()) {
@@ -128,6 +144,10 @@ public class ConflictsSolver<E> {
 	    g1.addConflict("c2", "d2");
 	    
 	    System.out.println(g1.bestSolution());
+	    System.out.println("forzo d1");
+	    System.out.println(g1.bestSolution("d1"));
+	    System.out.println("forzo d2");
+	    System.out.println(g1.bestSolution("d2"));
 	}
 	
 	private class Conflict {
