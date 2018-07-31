@@ -18,7 +18,7 @@ public class ConflictsSolver<E> {
 		vars.add(v);
 	}
 	
-	public void setGroup(E groupEl[]) {
+	public void setGroup(List<E> groupEl) {
 		int group = numGroups++;
 		ArrayList<Variable> g = new ArrayList<>();
 		for(E el : groupEl) {
@@ -55,21 +55,23 @@ public class ConflictsSolver<E> {
 	
 	public List<E> bestSolution(E forced) {
 		Collections.sort(vars);
+		List<Variable> lightVars = new ArrayList<>();
+		lightVars.addAll(vars);
 		Variable v = mapEV.get(forced);
 		List<Variable> chosen = new ArrayList<>();
 		v.chosen = true;
 		chosen.add(v);
 		for(Conflict c : confl) {
-			if(c.v1.compareTo(c.v2) <= 0)
+			if(c.v1.equals(v))
+				lightVars.remove(c.v2);
+			else if(c.v2.equals(v))
+				lightVars.remove(c.v1);
+			else if(c.v1.compareTo(c.v2) <= 0)
 				c.v1.conflicts.add(c.v2);
 			else
 				c.v2.conflicts.add(c.v1);
-			if(c.v1.equals(v))
-				c.v2.obscure(true);
-			else if(c.v2.equals(v))
-				c.v1.obscure(true);
 		}
-		return bestSolution(vars, chosen, new ArrayList<>());
+		return bestSolution(lightVars, chosen, new ArrayList<>());
 	}
 	
 	private List<E> bestSolution(List<Variable> toChoose, List<Variable> chosen, List<E> currentBest) {
@@ -110,7 +112,6 @@ public class ConflictsSolver<E> {
 	}
 	
 	private int bound(List<Variable> toChoose) {
-		int i = 0;
 		Collection<Integer> groupsDone = new TreeSet<>();
 		for(Variable v : toChoose)
 			if(!v.chosen && (v.obscured || groupsDone.contains(v.group)))
@@ -122,10 +123,14 @@ public class ConflictsSolver<E> {
 
 	public static void main(String[] args) {
 		ConflictsSolver<String> g1 = new ConflictsSolver<>();
-	    String a[] = {"a1","a2"};
-	    String b[] = {"b1","b2"};
-	    String c[] = {"c1","c2"};
-	    String d[] = {"d1","d2"};
+	    List<String> a = new ArrayList<>();
+	    a.add("a1"); a.add("a2");
+	    List<String> b = new ArrayList<>();
+	    b.add("b1"); b.add("b2");
+	    List<String> c = new ArrayList<>();
+	    c.add("c1"); c.add("c2");
+	    List<String> d = new ArrayList<>();
+	    d.add("d1"); d.add("d2");
 	    g1.setGroup(a);
 	    g1.setGroup(b);
 	    g1.setGroup(c);
@@ -161,10 +166,6 @@ public class ConflictsSolver<E> {
 		
 		public String toString() {
 			return "(" + v1.value + " -- " + v2.value + ")";
-		}
-		
-		boolean contains(Variable v) {
-			return v1.equals(v) || v2.equals(v);
 		}
 		
 		public boolean equals(Object o) {
