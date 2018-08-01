@@ -7,6 +7,7 @@ public class Screening implements Comparable<Screening>{
 	private Date startTime;
 	private Date endTime;
 	private String cinema = "";
+	private boolean obscured = false;
 	
 	private static SimpleDateFormat df = new SimpleDateFormat("EEE dd/MM HH:mm");
 	private static SimpleDateFormat dfHour = new SimpleDateFormat("HH:mm");
@@ -86,6 +87,14 @@ public class Screening implements Comparable<Screening>{
 		} else
 			cmp = startTime.compareTo(s.startTime);
 		return cmp;
+	}
+	
+	public boolean isObscured() {
+		return obscured;
+	}
+	
+	public void obscure(boolean b) {
+		obscured = b;
 	}
 	
 	public static boolean isConflict(Screening s1, Screening s2) {

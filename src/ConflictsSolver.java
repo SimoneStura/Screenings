@@ -95,39 +95,62 @@ public class ConflictsSolver<E> {
 	}
 	
 	private int bestResult(List<Variable> toChoose, int current, int best) {
-		return 0;
-	}
-	
-	public List<E> bestSolution() {
-		if(sortNecessary)
-			sortConflicts();
-		return bestSolution(vars, new ArrayList<>(), new ArrayList<>());
-	}
-	
-	private List<E> bestSolution(List<Variable> toChoose, List<Variable> chosen, List<E> currentBest) {
 		List<Variable> newToChoose = branch(toChoose);
 		if(newToChoose == null) {
-			if(chosen.size() > currentBest.size()) {
-				List<E> newBest = new ArrayList<>();
-				for(Variable vbl : chosen)
-					newBest.add(vbl.value);
-				return newBest;
-			} else
-				return currentBest;
+			if(current > best)
+				return current;
+			else
+				return best;
 		}
 		Variable v = newToChoose.get(0);
 		v.choose(true);
-		if(chosen.size() + 1 + bound(newToChoose) > currentBest.size()) {
+		if(bound(newToChoose, current + 1) > best)
+			best = bestResult(newToChoose, current + 1, best);
+		v.choose(false);
+		if(best == varsGroup.size()) return best;
+		v.obscure(true);
+		if(bound(newToChoose, current) > best)
+			best = bestResult(newToChoose, current, best);
+		v.obscure(false);
+		return best;
+	}
+	
+	public List<List<E>> allBestSolutions() {
+		if(sortNecessary)
+			sortConflicts();
+		return allBestSolutions(vars, new ArrayList<>(), new ArrayList<>(), -1);
+	}
+	
+	private List<List<E>> allBestSolutions(List<Variable> toChoose, List<Variable> chosen, 
+				List<List<E>> best, int bestRes) {
+		List<Variable> newToChoose = branch(toChoose);
+		if(newToChoose == null) {
+			List<E> currentBest = new ArrayList<>();
+			for(Variable vbl : chosen)
+				currentBest.add(vbl.value);
+			if(best.size() == 0 || currentBest.size() == bestRes)
+				best.add(currentBest);
+			else if(currentBest.size() > bestRes) {
+				List<List<E>> newBest = new ArrayList<>();
+				newBest.add(currentBest);
+				best = newBest;
+			}
+			return best;
+		}
+		Variable v = newToChoose.get(0);
+		v.choose(true);
+		if(bound(newToChoose, chosen.size() + 1) >= bestRes) {
 			chosen.add(v);
-			currentBest = bestSolution(newToChoose, chosen, currentBest);
+			best = allBestSolutions(newToChoose, chosen, best, bestRes);
+			bestRes = best.get(0).size();
 			chosen.remove(v);
 		}
 		v.choose(false);
 		v.obscure(true);
-		if(chosen.size() + bound(newToChoose) > currentBest.size())
-			currentBest = bestSolution(newToChoose, chosen, currentBest);
+		if(bound(newToChoose, chosen.size()) >= bestRes)
+			best = allBestSolutions(newToChoose, chosen, best, bestRes);
 		v.obscure(false);
-		return currentBest;
+		return best;
 	}
 	
 	private List<Variable> branch(List<Variable> toChoose) {
@@ -144,28 +167,26 @@ public class ConflictsSolver<E> {
 		return toChoose.subList(indexStart, indexEnd);
 	}
 	
-	private int bound(List<Variable> toChoose) {
+	private int bound(List<Variable> toChoose, int currentValue) {
 		Collection<Integer> groupsDone = new TreeSet<>();
 		for(Variable v : toChoose)
 			if(!v.chosen && (v.obscured || groupsDone.contains(v.group)))
 				continue;
 			else
 				groupsDone.add(v.group);
-		return groupsDone.size();
+		return groupsDone.size() + currentValue;
 	}
 
 	public static void main(String[] args) {
 		ConflictsSolver<String> g1 = new ConflictsSolver<>();
 	    List<String> a = new ArrayList<>();
-	    a.add("a1");
+	    a.add("a1"); a.add("a2");
 	    List<String> b = new ArrayList<>();
 	    b.add("b1"); b.add("b2");
 	    List<String> c = new ArrayList<>();
 	    c.add("c1"); c.add("c2");
 	    List<String> d = new ArrayList<>();
 	    d.add("d1"); d.add("d2");
-	    g1.addGroup(a);
-	    a.add("a2");
 	    g1.addGroup(a);
 	    g1.addGroup(b);
 	    g1.addGroup(c);
@@ -183,7 +204,8 @@ public class ConflictsSolver<E> {
 	    g1.addConflict("c1", "d1");
 	    g1.addConflict("c2", "d2");
 	    
-	    System.out.println(g1.bestSolution());
+	    System.out.println(g1.bestResult());
+	    System.out.println(g1.allBestSolutions());
 	}
 	
 	private class Variable implements Comparable<Variable> {
@@ -191,7 +213,7 @@ public class ConflictsSolver<E> {
 		int group = 0;
 		int index;
 		int numConfl = 0;
-		boolean chosen = false, obscured = false;
+		boolean chosen = false, obscured = false, previous = false;
 		TreeSet<Variable> conflicts = new TreeSet<>();
 		
 		Variable(E v) {
@@ -200,18 +222,25 @@ public class ConflictsSolver<E> {
 		}
 		
 		void obscure(boolean b) {
-			obscured = b;
+			if(b) {
+				previous = obscured;
+				obscured = true;
+			} else {
+				obscured = previous;
+				previous = false;
+			}
 		}
 		
 		void choose(boolean b) {
 			chosen = b;
 			obscured = false;
+			previous = false;
 			for(Variable v : conflicts)
 				v.obscure(b);
 			for(Variable v : varsGroup.get(group))
 				if(this.compareTo(v) < 0) {
-					v.chosen = b;
-					v.obscured = b;
+						v.chosen = b;
+						v.obscure(b);
 				}
 		}
 		

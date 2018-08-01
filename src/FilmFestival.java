@@ -5,7 +5,7 @@ public class FilmFestival {
 	private TreeSet<Screening> shows = new TreeSet<>((Screening s1, Screening s2) -> s1.compareTo(s2));
 	private ArrayList<Movie> movies = new ArrayList<>();
 	private HashMap<Movie,ArrayList<Screening>> screens = new HashMap<>();
-	private ConflictsSolver<Screening> conflicts = new ConflictsSolver<>();
+	private List<Conflict<Screening>> confl = new ArrayList<>();
 	
 	public FilmFestival() {}
 	
@@ -15,14 +15,12 @@ public class FilmFestival {
 			Movie m = s.getM();
 			if(!(movies.contains(m))) {
 				movies.add(m);
-				screens.put(m, new ArrayList<>(3));
+				screens.put(m, new ArrayList<>(5));
 			}
-			List<Screening> screenGroup = screens.get(m);
-			screenGroup.add(s);
-			conflicts.addGroup(screenGroup);
+			screens.get(m).add(s);
 			for(Screening screen : shows)
 				if(!(screen.getM().equals(m)) && Screening.isConflict(s, screen))
-					conflicts.addConflict(screen, s);
+					confl.add(new Conflict<>(screen, s));
 		}
 		return ctrl;
 	}
@@ -176,40 +174,6 @@ public class FilmFestival {
 		cal.set(2015,10,23,9, 0);
 		tff.addScreen(new Screening(m, cal.getTime()));
 		
-		List<Screening> bestSol = tff.conflicts.bestSolution();
-		Collections.sort(bestSol);
-		for(Screening s : bestSol) {
-			System.out.print(s);
-			System.out.println("  -  " + s.getM());
-		}
 		
-//		for(Screening screen : tff.getShows())
-//			System.out.println(screen + " " + screen.getM());
-		/*
-		for(Movie mov : tff.getMovies()) {
-			System.out.println(mov);
-			for(Screening screen : tff.getScreens().get(mov))
-				System.out.println("\t" + screen);
-			System.out.println();
-		}
-		
-		//tff.conflicts.choose(ch1);
-		//tff.conflicts.choose(ch2);
-		List<Screening> list = tff.conflicts.cyclic();
-		if(list == null) return;
-		for(Screening screen : list)
-			System.out.println("\t" + screen + " " + screen.getM());
-/*		for(Screening scree : tff.getShows()) {
-			System.out.println(scree + " " + scree.getM());
-			Graph<Screening> g = tff.conflicts(scree);
-			List<Screening> l = g.cyclic();
-			if(l != null) {
-				System.out.println("CICLO:");
-				for(Screening screen : g.notObscurated())
-					System.out.println("\t" + screen + " " + screen.getM());
-			}
-		}
-		*/
 	}
-
 }
