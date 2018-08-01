@@ -19,7 +19,7 @@ public class FilmFestival {
 			}
 			List<Screening> screenGroup = screens.get(m);
 			screenGroup.add(s);
-			conflicts.setGroup(screenGroup);
+			conflicts.addGroup(screenGroup);
 			for(Screening screen : shows)
 				if(!(screen.getM().equals(m)) && Screening.isConflict(s, screen))
 					conflicts.addConflict(screen, s);
