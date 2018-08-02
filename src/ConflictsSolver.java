@@ -12,9 +12,8 @@ import java.util.*;
  */
 
 public class ConflictsSolver<E> {
-	private static int idxVars = 0;
-	private static int idxGroups = 0;
-
+	private int idxVars = 0;
+	private int idxGroups = 0;
 	private Map<E,Variable> mapEV = new HashMap<>();
 	private List<List<Variable>> varsGroup = new ArrayList<>();
 	private List<Variable> vars = new ArrayList<>();
@@ -22,6 +21,14 @@ public class ConflictsSolver<E> {
 	private boolean sortNecessary = true;
 
 	public ConflictsSolver() {}
+	
+	public int getNumElements() {
+		return vars.size();
+	}
+	
+	public int getNumGroups() {
+		return varsGroup.size();
+	}
 	
 	private Variable add(E e) {
 		Variable v = mapEV.get(e);

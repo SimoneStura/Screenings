@@ -1,5 +1,5 @@
 
-public class Movie {
+public class Movie implements Comparable<Movie> {
 	private String title;
 	private int year;
 	private int runtime;
@@ -64,18 +64,3 @@ public class Movie {
 		System.out.println("m1 compareTo m3 => " + m1.compareTo(m3));
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

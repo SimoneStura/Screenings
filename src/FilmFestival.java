@@ -37,15 +37,40 @@ public class FilmFestival {
 		return screens;
 	}
 	
-	public boolean hasComplessConflict(Movie m) {
-		return false;
+	public List<Movie> solveConflicts() {
+		SortedSet<Movie> visited = new TreeSet<>();
+		List<Movie> chosen = new ArrayList<>();
+		for(Movie m : movies) {
+			if(visited.contains(m))
+				continue;
+			List<Movie> nextChosen = solveConflicts(m, visited);
+			if(nextChosen == null)
+				continue;
+			chosen.addAll(nextChosen);
+		}
+		return chosen;
+	}
+	
+	private List<Movie> solveConflicts(Movie m, SortedSet<Movie> visited) {
+		List<Movie> conflMovie = new ArrayList<>();
+		ConflictsSolver<Screening> conSol = new ConflictsSolver<>();
+		searchConflicts(conSol, m, conflMovie, visited);
+		if(conSol.bestResult() == conSol.getNumGroups())
+			return conflMovie;
+		System.out.println("CONFLITTO NON RISOLVIBILE\n");
+		List<List<Screening>> solutions = conSol.allBestSolutions();
+		SortedSet<Movie> exclSet = new TreeSet<>();
+		List<List<Movie>> excluded = findExcluded(solutions, conflMovie, exclSet);
+		List<Movie> toExclude = chooseBetween(excluded.get(0).size() ,exclSet);
+		conflMovie.removeAll(toExclude);
+		return conflMovie;
 	}
 	
 	private void searchConflicts(ConflictsSolver<Screening> conSol, Movie m, 
-			List<Screening> conflS, List<Movie> conflM) {
-		conflM.add(m);
+			List<Movie> conflMovie, SortedSet<Movie> visited) {
+		visited.add(m);
+		conflMovie.add(m);
 		List<Screening> screenGroup = screens.get(m);
-		conflS.addAll(screenGroup);
 		conSol.addGroup(screenGroup);
 		for(Conflict<Screening> c : confl)
 			for(Screening s1 : screenGroup) {
@@ -56,12 +81,45 @@ public class FilmFestival {
 					s2 = c.getE1();
 				else
 					continue;
-				if(conflS.contains(s2))
+				if(visited.contains(s2.getM()))
 					conSol.addConflict(s1, s2);
 				else
-					searchConflicts(conSol, s2.getM(), conflS, conflM);
+					searchConflicts(conSol, s2.getM(), conflMovie, visited);
 				break;
 			}
+	}
+	
+	private List<List<Movie>> findExcluded(List<List<Screening>> solutions, List<Movie> conflMovie, 
+			SortedSet<Movie> exclSet) {
+		List<List<Movie>> excluded = new ArrayList<>();
+		for(List<Screening> ls : solutions) {
+			List<Movie> excl = new ArrayList<>();
+			excl.addAll(conflMovie);
+			for(Screening s : ls)
+				excl.remove(s.getM());
+			excluded.add(excl);
+			exclSet.addAll(excl);
+		}
+		return excluded;
+	}
+	
+	private List<Movie> chooseBetween(int numChoices, SortedSet<Movie> exclSet) {
+		Movie excl[] = new Movie[exclSet.size()];
+		excl = exclSet.toArray(excl);
+		List<Movie> toBeExcluded = new ArrayList<>();
+		System.out.println("SCEGLINE " + numChoices + " DA ESCLUDERE\n");
+		int idx = 1;
+		for(Movie m : exclSet)
+			System.out.println((idx++) + " -> " + m);
+		Scanner scan = new Scanner(System.in);
+		for(int i = 0; i < numChoices; i++) {
+			System.out.print("Inserisci il numero del film da escludere: ");
+			int idxExcluded = scan.nextInt();
+			System.out.println();
+			toBeExcluded.add(excl[idxExcluded-1]);
+		}
+		scan.close();
+		return toBeExcluded;
 	}
 	
 	private void printSolutions(List<List<Screening>> solutions) {
@@ -72,18 +130,6 @@ public class FilmFestival {
 			for(Screening s : ls)
 				System.out.println("\t" + s.getM() + "  -  " + s);
 		}
-	}
-	
-	public List<Movie> solveConflicts(Movie m) {
-		List<Screening> conflictingScreen = new ArrayList<>();
-		List<Movie> conflictingMovie = new ArrayList<>();
-		ConflictsSolver<Screening> conSol = new ConflictsSolver<>();
-		searchConflicts(conSol, m, conflictingScreen, conflictingMovie);
-		if(conSol.bestResult() == conflictingMovie.size())
-			return conflictingMovie;
-		printSolutions(conSol.allBestSolutions());
-		
-		return null;
 	}
 	
 	public static void main(String[] args) {
@@ -185,7 +231,12 @@ public class FilmFestival {
 		//cal.set(2015,10,23,9, 0);
 		//tff.addScreen(new Screening(m, cal.getTime()));
 		
-		List<Movie> movies = tff.solveConflicts(m);
+		List<Movie> movies = tff.solveConflicts();
+		if(movies == null) System.exit(0);
+		System.out.println("FILM SCELTI\n");
+		for(Movie mov : movies) {
+			System.out.println(mov);
+		}
 		//for(Movie mov : movies)
 			//System.out.println(mov);
 	}

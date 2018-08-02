@@ -127,16 +127,3 @@ public class Screening implements Comparable<Screening>{
 		System.out.println("s1 compareTo s3 => " + s1.compareTo(s3));
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
