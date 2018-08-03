@@ -58,7 +58,7 @@ public class FilmFestival {
 		if(conSol.bestResult() == conSol.getNumGroups())
 			return conflMovie;
 		System.out.println("CONFLITTO NON RISOLVIBILE\n");
-		List<List<Screening>> solutions = conSol.allBestSolutions();
+		List<List<Screening>> solutions = conSol.allGoodSolutions();
 		SortedSet<Movie> exclSet = new TreeSet<>();
 		List<List<Movie>> excluded = findExcluded(solutions, conflMovie, exclSet);
 		List<Movie> toExclude = chooseBetween(excluded.get(0).size() ,exclSet);
@@ -121,7 +121,7 @@ public class FilmFestival {
 		scan.close();
 		return toBeExcluded;
 	}
-	
+	/*
 	private void printSolutions(List<List<Screening>> solutions) {
 		for(int i = 0; i < solutions.size(); i++) {
 			List<Screening> ls = solutions.get(i);
@@ -131,7 +131,7 @@ public class FilmFestival {
 				System.out.println("\t" + s.getM() + "  -  " + s);
 		}
 	}
-	
+	*/
 	public static void main(String[] args) {
 		FilmFestival tff = new FilmFestival();
 		Movie m = new Movie("God Bless The Child", 2015, 92);

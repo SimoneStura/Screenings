@@ -11,7 +11,7 @@ import java.util.*;
  * @param <E> gli elementi rappresentati dalle variabili.
  */
 
-public class ConflictsSolver<E> {
+public class ConflictsSolver<E extends placedOverTime<E>> {
 	private int idxVars = 0;
 	private int idxGroups = 0;
 	private Map<E,Variable> mapEV = new HashMap<>();
@@ -85,19 +85,23 @@ public class ConflictsSolver<E> {
 	}
 	
 	private void sortConflicts() {
-		Collections.sort(vars);
+		if(sortNecessary)
+			sortConflicts((Variable v1, Variable v2) -> {return v1.compareTo(v2);});
+		sortNecessary = false;
+	}
+	
+	private void sortConflicts(Comparator<Variable> comp) {
+		Collections.sort(vars, comp);
 		for(Conflict<Variable> c : confl) {
-			if(c.getE1().compareTo(c.getE2()) <= 0)
+			if(comp.compare(c.getE1(),c.getE2()) <= 0)
 				c.getE1().conflicts.add(c.getE2());
 			else
 				c.getE2().conflicts.add(c.getE1());
 		}
-		sortNecessary = false;
 	}
 	
 	public int bestResult() {
-		if(sortNecessary)
-			sortConflicts();
+		sortConflicts();
 		return bestResult(vars, 0, -1);
 	}
 	
@@ -122,13 +126,12 @@ public class ConflictsSolver<E> {
 		return best;
 	}
 	
-	public List<List<E>> allBestSolutions() {
-		if(sortNecessary)
-			sortConflicts();
-		return allBestSolutions(vars, new ArrayList<>(), new ArrayList<>(), -1);
+	public List<List<E>> allGoodSolutions() {
+		sortConflicts();
+		return allGoodSolutions(vars, new ArrayList<>(), new ArrayList<>(), -1);
 	}
 	
-	private List<List<E>> allBestSolutions(List<Variable> toChoose, List<Variable> chosen, 
+	private List<List<E>> allGoodSolutions(List<Variable> toChoose, List<Variable> chosen, 
 				List<List<E>> best, int bestRes) {
 		List<Variable> newToChoose = branch(toChoose);
 		if(newToChoose == null) {
@@ -148,16 +151,26 @@ public class ConflictsSolver<E> {
 		v.choose(true);
 		if(bound(newToChoose, chosen.size() + 1) >= bestRes) {
 			chosen.add(v);
-			best = allBestSolutions(newToChoose, chosen, best, bestRes);
+			best = allGoodSolutions(newToChoose, chosen, best, bestRes);
 			bestRes = best.get(0).size();
 			chosen.remove(v);
 		}
 		v.choose(false);
 		v.obscure(true);
 		if(bound(newToChoose, chosen.size()) >= bestRes)
-			best = allBestSolutions(newToChoose, chosen, best, bestRes);
+			best = allGoodSolutions(newToChoose, chosen, best, bestRes);
 		v.obscure(false);
 		return best;
+	}
+	
+	public SortedSet<E> bestSolution() {
+		sortConflicts((Variable v1, Variable v2) -> {return v1.value.compareTo(v2.value);});
+		return bestSolution(vars, new ArrayList<>(), new ArrayList<>());
+	}
+	
+	private SortedSet<E> bestSolution(List<Variable> toChoose, List<Variable> chosen, 
+				List<E> best) {
+		return null;
 	}
 	
 	private List<Variable> branch(List<Variable> toChoose) {
@@ -185,34 +198,36 @@ public class ConflictsSolver<E> {
 	}
 
 	public static void main(String[] args) {
-		ConflictsSolver<String> g1 = new ConflictsSolver<>();
-	    List<String> a = new ArrayList<>();
-	    a.add("a1"); a.add("a2");
-	    List<String> b = new ArrayList<>();
-	    b.add("b1"); b.add("b2");
-	    List<String> c = new ArrayList<>();
-	    c.add("c1"); c.add("c2");
-	    List<String> d = new ArrayList<>();
-	    d.add("d1"); d.add("d2");
-	    g1.addGroup(a);
-	    g1.addGroup(b);
-	    g1.addGroup(c);
-	    g1.addGroup(d);
-	    g1.addConflict("a1", "b1");
-	    g1.addConflict("a1", "d1");
-	    g1.addConflict("a2", "b2");
-	    g1.addConflict("a2", "c1");
-	    g1.addConflict("a2", "d1");
-	    g1.addConflict("a2", "d2");
-	    g1.addConflict("b1", "c1");
-	    g1.addConflict("b1", "d1");
-	    g1.addConflict("b2", "c2");
-	    g1.addConflict("b2", "d2");
-	    g1.addConflict("c1", "d1");
-	    g1.addConflict("c2", "d2");
+		ConflictsSolver<StringTest> cs = new ConflictsSolver<>();
+		List<StringTest> test = new ArrayList<>();
+		StringTest a1 = new StringTest("a1",1,3);
+		StringTest a2 = new StringTest("a2",5,7);
+		StringTest b1 = new StringTest("b1",2,4);
+		StringTest b2 = new StringTest("b2",6,8);
+		StringTest c1 = new StringTest("c1",4,5);
+		StringTest c2 = new StringTest("c2",8,10);
+		StringTest d1 = new StringTest("d1",2,5);
+		StringTest d2 = new StringTest("d2",6,9);
+	    List<StringTest> a = new ArrayList<>();
+	    a.add(a1); a.add(a2);
+	    List<StringTest> b = new ArrayList<>();
+	    b.add(b1); b.add(b2);
+	    List<StringTest> c = new ArrayList<>();
+	    c.add(c1); c.add(c2);
+	    List<StringTest> d = new ArrayList<>();
+	    d.add(d1); d.add(d2);
+	    cs.addGroup(a); test.addAll(a);
+	    cs.addGroup(b); test.addAll(b);
+	    cs.addGroup(c); test.addAll(c);
+	    cs.addGroup(d); test.addAll(d);
 	    
-	    System.out.println(g1.bestResult());
-	    System.out.println(g1.allBestSolutions());
+	    for(StringTest st1 : test)
+	    	for(StringTest st2 : test.subList(test.indexOf(st1) + 1, test.size()))
+	    		if(StringTest.isConflict(st1, st2))
+	    			cs.addConflict(st1, st2);
+	    
+	    System.out.println(cs.bestResult());
+	    System.out.println(cs.allGoodSolutions());
 	}
 	
 	private class Variable implements Comparable<Variable> {

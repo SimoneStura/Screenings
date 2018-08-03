@@ -2,7 +2,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-public class Screening implements Comparable<Screening>{
+public class Screening implements placedOverTime<Screening>{
 	private Movie m;
 	private Date startTime;
 	private Date endTime;
@@ -51,6 +51,14 @@ public class Screening implements Comparable<Screening>{
 	
 	public String getCinema() {
 		return cinema;
+	}
+	
+	public int gap(Screening s) {
+		int distance1 = (int) (s.startTime.getTime() - this.endTime.getTime()) / 60000;
+		if(distance1 > 0) return distance1;
+		int distance2 = (int) (this.startTime.getTime() - s.endTime.getTime()) / 60000;
+		if(distance2 <= 0) return 0;
+		return Math.negateExact(distance2);
 	}
 	
 	public String toString() {
@@ -114,9 +122,9 @@ public class Screening implements Comparable<Screening>{
 		Calendar cal = Calendar.getInstance();
 		cal.set(2018,6,5,21,45);
 		Screening s1 = new Screening(m, cal.getTime());
-		cal.set(2018,6,5,21,45);
+		cal.set(2018,6,5,22,45);
 		Screening s2 = new Screening(m, cal.getTime());
-		cal.set(2018,6,6,20,45);
+		cal.set(2018,6,5,19,30);
 		Screening s3 = new Screening(m, cal.getTime());
 		System.out.println(s1 + " " + s1.getM());
 		System.out.println(s2 + " " + s2.getM());
@@ -125,5 +133,9 @@ public class Screening implements Comparable<Screening>{
 		System.out.println("s1 equals s3 => " + s1.equals(s3));
 		System.out.println("s1 compareTo s2 => " + s1.compareTo(s2));
 		System.out.println("s1 compareTo s3 => " + s1.compareTo(s3));
+		System.out.println("gap between s1 - s2 => " + s1.gap(s2));
+		System.out.println("gap between s2 - s1 => " + s2.gap(s1));
+		System.out.println("gap between s1 - s3 => " + s1.gap(s3));
+		System.out.println("gap between s3 - s1 => " + s3.gap(s1));
 	}
 }
