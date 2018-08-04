@@ -55,8 +55,11 @@ public class FilmFestival {
 		List<Movie> conflMovie = new ArrayList<>();
 		ConflictsSolver<Screening> conSol = new ConflictsSolver<>();
 		searchConflicts(conSol, m, conflMovie, visited);
-		if(conSol.bestResult() == conSol.getNumGroups())
+		if(conSol.bestResult() == conSol.getNumGroups()) {
+			for(Screening s : conSol.bestSolution())
+				System.out.println(s + "  -  " + s.getM());
 			return conflMovie;
+		}
 		System.out.println("CONFLITTO NON RISOLVIBILE\n");
 		List<List<Screening>> solutions = conSol.allGoodSolutions();
 		SortedSet<Movie> exclSet = new TreeSet<>();
@@ -141,8 +144,8 @@ public class FilmFestival {
 		tff.addScreen(scr);
 		cal.set(2015,10,22,11, 30);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,23,19, 45);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,23,19, 45);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("Sufragette", 2015, 100);
 		cal.set(2015,10,21,14, 30);
@@ -156,54 +159,54 @@ public class FilmFestival {
 		tff.addScreen(new Screening(m, cal.getTime()));
 		cal.set(2015,10,23,12, 0);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,24,19, 45);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,24,19, 45);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("La Patota", 2015, 103);
 		cal.set(2015,10,22,22, 0);
 		tff.addScreen(new Screening(m, cal.getTime()));
 		cal.set(2015,10,23,9, 30);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,24,9, 45);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,24,9, 45);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("Lo Scambio", 2015, 93);
 		cal.set(2015,10,23,17, 30);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,24,19, 45);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,24,19, 45);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("Sopladora De Hojas", 2015, 96);
 		cal.set(2015,10,23,20, 0);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,24,9, 45);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,24,9, 45);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("High-Rise", 2015, 112);
-		//cal.set(2015,10,23,22, 30);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,23,22, 30);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		cal.set(2015,10,24,14, 0);
 		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("Me & Earl & The Dying Girl", 2015, 100);
 		cal.set(2015,10,22,22, 15);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,23,14, 15);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,23,14, 15);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("February", 2015, 93);
 		cal.set(2015,10,22,9, 0);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,23,22, 15);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,23,22, 15);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("Mia Madre Fa L'Attrice", 2015, 78);
 		cal.set(2015,10,21,19, 30);
 		tff.addScreen(new Screening(m, cal.getTime()));
 		cal.set(2015,10,22,9, 45);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,23,11, 45);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,23,11, 45);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("The Girl In The Photographs", 2015, 95);
 		cal.set(2015,10,21,22, 30);
@@ -211,25 +214,25 @@ public class FilmFestival {
 		cal.set(2015,10,22,9, 0);
 		Screening ch2 = new Screening(m, cal.getTime());
 		tff.addScreen(ch2);
-		//cal.set(2015,10,24,22, 15);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,24,22, 15);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		m = new Movie("The Quiet Earth", 2015, 91);
 		cal.set(2015,10,21,14, 45);
 		tff.addScreen(new Screening(m, cal.getTime()));
 		cal.set(2015,10,22,9, 0);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,23,17, 15);
-		//Screening ch1 = new Screening(m, cal.getTime());
-		//tff.addScreen(ch1);
+		cal.set(2015,10,23,17, 15);
+		Screening ch1 = new Screening(m, cal.getTime());
+		tff.addScreen(ch1);
 		
 		m = new Movie("Nusty Baby", 2015, 100);
 		cal.set(2015,10,21,22, 30);
 		tff.addScreen(new Screening(m, cal.getTime()));
 		cal.set(2015,10,22,14, 30);
 		tff.addScreen(new Screening(m, cal.getTime()));
-		//cal.set(2015,10,23,9, 0);
-		//tff.addScreen(new Screening(m, cal.getTime()));
+		cal.set(2015,10,23,9, 0);
+		tff.addScreen(new Screening(m, cal.getTime()));
 		
 		List<Movie> movies = tff.solveConflicts();
 		if(movies == null) System.exit(0);

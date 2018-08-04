@@ -11,7 +11,7 @@ import java.util.*;
  * @param <E> gli elementi rappresentati dalle variabili.
  */
 
-public class ConflictsSolver<E extends placedOverTime<E>> {
+public class ConflictsSolver<E extends PlacedOverTime<E>> {
 	private int idxVars = 0;
 	private int idxGroups = 0;
 	private Map<E,Variable> mapEV = new HashMap<>();
@@ -165,12 +165,43 @@ public class ConflictsSolver<E extends placedOverTime<E>> {
 	
 	public SortedSet<E> bestSolution() {
 		sortConflicts((Variable v1, Variable v2) -> {return v1.value.compareTo(v2.value);});
-		return bestSolution(vars, new ArrayList<>(), new ArrayList<>());
+		Solution best = new Solution();
+		best.maximumGap = Integer.MAX_VALUE;
+		return bestInnerSolution(vars, new Solution(), best).sol;
 	}
 	
-	private SortedSet<E> bestSolution(List<Variable> toChoose, List<Variable> chosen, 
-				List<E> best) {
-		return null;
+	/*
+	 * The best solution is the one which has the maximum number of Groups and 
+	 * the smallest value of maximumGap
+	 */
+	private Solution bestInnerSolution(List<Variable> toChoose, Solution current, Solution best) {
+		List<Variable> newToChoose = branch(toChoose);
+		if(newToChoose == null) {
+			if(current.sol.size() >= best.sol.size()) {
+				Solution newBest = new Solution();
+				for(E e : current.sol)
+					newBest.sol.add(e);
+				newBest.maximumGap = current.maximumGap;
+				return newBest;
+			}
+			else
+				return best;
+		}
+		Variable v = newToChoose.get(0);
+		v.choose(true);
+		if(bound(newToChoose, current.sol.size() + 1) >= best.sol.size() && 
+				current.bound(v.value) < best.maximumGap) {
+			current.add(v.value);
+			best = bestInnerSolution(newToChoose, current, best);
+			current.remove(v.value);
+		}
+		v.choose(false);
+		v.obscure(true);
+		if(bound(newToChoose, current.sol.size()) >= best.sol.size() && 
+				current.maximumGap < best.maximumGap)
+			best = bestInnerSolution(newToChoose, current, best);
+		v.obscure(false);
+		return best;
 	}
 	
 	private List<Variable> branch(List<Variable> toChoose) {
@@ -228,6 +259,7 @@ public class ConflictsSolver<E extends placedOverTime<E>> {
 	    
 	    System.out.println(cs.bestResult());
 	    System.out.println(cs.allGoodSolutions());
+	    System.out.println(cs.bestSolution());
 	}
 	
 	private class Variable implements Comparable<Variable> {
@@ -259,11 +291,10 @@ public class ConflictsSolver<E extends placedOverTime<E>> {
 			previous = false;
 			for(Variable v : conflicts)
 				v.obscure(b);
-			for(Variable v : varsGroup.get(group))
-				if(this.compareTo(v) < 0) {
-						v.chosen = b;
-						v.obscure(b);
-				}
+			for(Variable v : varsGroup.get(group)) {
+				v.chosen = b;
+				v.obscure(b);
+			}
 		}
 		
 		public String toString() {
@@ -281,5 +312,102 @@ public class ConflictsSolver<E extends placedOverTime<E>> {
 				return this.index - other.index;
 			return numConfl - other.numConfl;
 		}
+	}
+	
+	private class Solution {
+		SortedSet<E> sol = new TreeSet<>();
+		int maximumGap = 0;
+		Map<E,Integer> previousGap = new HashMap<>();
+		Map<Integer, Eating> dayMeal = new HashMap<>();
+		
+		int bound(E e) {
+			if(sol.size() == 0) return maximumGap;
+			E last = sol.last();
+			int newGap = last.gap(e);
+			Calendar calLast = Calendar.getInstance();
+			Calendar calThis = Calendar.getInstance();
+			calLast.setTime(last.getStartTime());
+			calThis.setTime(e.getStartTime());
+			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE))
+				return maximumGap;
+			calLast.setTime(last.getEndTime());
+			int day = calLast.get(Calendar.DATE);
+			int hour = calLast.get(Calendar.HOUR_OF_DAY);
+			Eating eat = dayMeal.get(day);
+			if(eat == null)
+				return Math.max(newGap, maximumGap);
+			if(((!eat.lunch && (hour == 11 || hour == 12 || hour == 13)) ||
+					(!eat.dinner && (hour == 19 || hour == 20 || hour == 21))) && newGap >= 40)
+				return maximumGap;
+			return Math.max(newGap, maximumGap);
+		}
+		
+		void add(E e) {
+			if(sol.size() == 0) {
+				sol.add(e);
+				return;
+			}
+			E last = sol.last();
+			sol.add(e);
+			previousGap.put(last, maximumGap);
+			int newGap = last.gap(e);
+			
+			Calendar calLast = Calendar.getInstance();
+			Calendar calThis = Calendar.getInstance();
+			calLast.setTime(last.getStartTime());
+			calThis.setTime(e.getStartTime());
+			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE))
+				return;
+			calLast.setTime(last.getEndTime());
+			int day = calLast.get(Calendar.DATE);
+			int hour = calLast.get(Calendar.HOUR_OF_DAY);
+			Eating eat = dayMeal.get(day);
+			if(eat == null) {
+				dayMeal.put(day, new Eating());
+				eat = dayMeal.get(day);
+			}
+			if(!eat.lunch && (hour == 11 || hour == 12 || hour == 13) && newGap >= 40) {
+				eat.lunch = true;
+				return;
+			}
+			if(!eat.dinner && (hour == 19 || hour == 20 || hour == 21) && newGap >= 40) {
+				eat.dinner = true;
+				return;
+			}
+			if(newGap > maximumGap)
+				maximumGap = newGap;
+		}
+		
+		void remove(E e) {
+			sol.remove(e);
+			if(sol.size() == 0) return;
+			E last = sol.last();
+			maximumGap = previousGap.get(last);
+			int oldGap = last.gap(e);
+			
+			Calendar calLast = Calendar.getInstance();
+			Calendar calThis = Calendar.getInstance();
+			calLast.setTime(last.getStartTime());
+			calThis.setTime(e.getStartTime());
+			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE))
+				return;
+			calLast.setTime(last.getEndTime());
+			int day = calLast.get(Calendar.DATE);
+			int hour = calLast.get(Calendar.HOUR_OF_DAY);
+			Eating eat = dayMeal.get(day);
+			if(eat.lunch && (hour == 11 || hour == 12 || hour == 13) && oldGap >= 40) {
+				eat.lunch = false;
+				return;
+			}
+			if(eat.dinner && (hour == 19 || hour == 20 || hour == 21) && oldGap >= 40) {
+				eat.dinner = false;
+				return;
+			}
+		}
+	}
+	
+	private class Eating {
+		boolean lunch = false;
+		boolean dinner = false;
 	}
 }
