@@ -57,7 +57,8 @@ public class FilmFestival {
 		searchConflicts(conSol, m, conflMovie, visited);
 		if(conSol.bestResult() == conSol.getNumGroups()) {
 			for(Screening s : conSol.bestSolution())
-				System.out.println(s + "  -  " + s.getM());
+				System.out.println(s + "  |  " + s.getM());
+			System.out.println();
 			return conflMovie;
 		}
 		System.out.println("CONFLITTO NON RISOLVIBILE\n");

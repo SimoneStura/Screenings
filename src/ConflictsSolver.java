@@ -2,8 +2,8 @@ import java.util.*;
 
 /**
  * Una classe che risolve Problemi di massimizzazione con n variabili binarie e k vincoli 
- * della forma (Xi + Xj <= 1). Per la risoluzione è utilizzato un algoritmo di Branch & Bound.
- * È inoltre possibile raggruppare le variabili in gruppi. Cosí facendo, le soluzioni conterranno
+ * della forma (Xi + Xj <= 1). Per la risoluzione ï¿½ utilizzato un algoritmo di Branch & Bound.
+ * ï¿½ inoltre possibile raggruppare le variabili in gruppi. Cosï¿½ facendo, le soluzioni conterranno
  * al massimo una variabile per ciascun gruppo.
  * 
  * @author Simone Stura
@@ -166,6 +166,7 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 	public SortedSet<E> bestSolution() {
 		sortConflicts((Variable v1, Variable v2) -> {return v1.value.compareTo(v2.value);});
 		Solution best = new Solution();
+		best.minimumForDay = 0;
 		best.maximumGap = Integer.MAX_VALUE;
 		return bestInnerSolution(vars, new Solution(), best).sol;
 	}
@@ -181,6 +182,7 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 				Solution newBest = new Solution();
 				for(E e : current.sol)
 					newBest.sol.add(e);
+				newBest.minimumForDay = current.minimumForDay;
 				newBest.maximumGap = current.maximumGap;
 				return newBest;
 			}
@@ -190,7 +192,7 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 		Variable v = newToChoose.get(0);
 		v.choose(true);
 		if(bound(newToChoose, current.sol.size() + 1) >= best.sol.size() && 
-				current.bound(v.value) < best.maximumGap) {
+				current.bound(v.value, best.minimumForDay, best.maximumGap)) {
 			current.add(v.value);
 			best = bestInnerSolution(newToChoose, current, best);
 			current.remove(v.value);
@@ -198,7 +200,7 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 		v.choose(false);
 		v.obscure(true);
 		if(bound(newToChoose, current.sol.size()) >= best.sol.size() && 
-				current.maximumGap < best.maximumGap)
+				current.bound(null, best.minimumForDay, best.maximumGap))
 			best = bestInnerSolution(newToChoose, current, best);
 		v.obscure(false);
 		return best;
@@ -317,47 +319,66 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 	private class Solution {
 		SortedSet<E> sol = new TreeSet<>();
 		int maximumGap = 0;
+		int minimumForDay = Integer.MAX_VALUE;
+		int currentDay = 0;
+		Map<E,Integer> previousDay = new HashMap<>();
 		Map<E,Integer> previousGap = new HashMap<>();
 		Map<Integer, Eating> dayMeal = new HashMap<>();
 		
-		int bound(E e) {
-			if(sol.size() == 0) return maximumGap;
+		boolean bound(E e, int bestDay, int bestGap) {
+			if(sol.size() == 0) return true;
+			if(e == null) {
+				if(minimumForDay == bestDay)
+					return maximumGap > bestGap;
+				else
+					return minimumForDay > bestDay;
+			}
 			E last = sol.last();
 			int newGap = last.gap(e);
 			Calendar calLast = Calendar.getInstance();
 			Calendar calThis = Calendar.getInstance();
 			calLast.setTime(last.getStartTime());
 			calThis.setTime(e.getStartTime());
-			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE))
-				return maximumGap;
+			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE)) {
+				if(currentDay == bestDay)
+					return maximumGap > bestGap;
+				else
+					return currentDay > bestDay;
+			}
 			calLast.setTime(last.getEndTime());
 			int day = calLast.get(Calendar.DATE);
 			int hour = calLast.get(Calendar.HOUR_OF_DAY);
 			Eating eat = dayMeal.get(day);
 			if(eat == null)
-				return Math.max(newGap, maximumGap);
+				return Math.max(newGap, maximumGap) < bestGap;
 			if(((!eat.lunch && (hour == 11 || hour == 12 || hour == 13)) ||
 					(!eat.dinner && (hour == 19 || hour == 20 || hour == 21))) && newGap >= 40)
-				return maximumGap;
-			return Math.max(newGap, maximumGap);
+				return maximumGap < bestGap;
+			return Math.max(newGap, maximumGap) < bestGap;
 		}
 		
 		void add(E e) {
 			if(sol.size() == 0) {
 				sol.add(e);
+				currentDay++;
 				return;
 			}
 			E last = sol.last();
 			sol.add(e);
 			previousGap.put(last, maximumGap);
+			previousDay.put(last, minimumForDay);
 			int newGap = last.gap(e);
 			
 			Calendar calLast = Calendar.getInstance();
 			Calendar calThis = Calendar.getInstance();
 			calLast.setTime(last.getStartTime());
 			calThis.setTime(e.getStartTime());
-			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE))
+			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE)) {
+				minimumForDay = Math.min(minimumForDay, currentDay);
+				currentDay = 1;
 				return;
+			}
+			currentDay++;
 			calLast.setTime(last.getEndTime());
 			int day = calLast.get(Calendar.DATE);
 			int hour = calLast.get(Calendar.HOUR_OF_DAY);
@@ -383,14 +404,18 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 			if(sol.size() == 0) return;
 			E last = sol.last();
 			maximumGap = previousGap.get(last);
+			minimumForDay = previousDay.get(last);
 			int oldGap = last.gap(e);
 			
 			Calendar calLast = Calendar.getInstance();
 			Calendar calThis = Calendar.getInstance();
 			calLast.setTime(last.getStartTime());
 			calThis.setTime(e.getStartTime());
-			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE))
+			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE)) {
+				currentDay = minimumForDay;
 				return;
+			}
+			currentDay--;
 			calLast.setTime(last.getEndTime());
 			int day = calLast.get(Calendar.DATE);
 			int hour = calLast.get(Calendar.HOUR_OF_DAY);

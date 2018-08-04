@@ -62,17 +62,7 @@ public class Screening implements PlacedOverTime<Screening>{
 	}
 	
 	public String toString() {
-		String s = df.format(startTime) + " - ";
-		Calendar calS = Calendar.getInstance();
-		Calendar calE = Calendar.getInstance();
-		calS.setTime(startTime);
-		calE.setTime(endTime);
-		if(calS.get(Calendar.DAY_OF_MONTH) == calE.get(Calendar.DAY_OF_MONTH) 
-				&& calS.get(Calendar.MONTH) == calE.get(Calendar.MONTH))
-			s += dfHour.format(endTime);
-		else
-			s += df.format(endTime);
-		return s;
+		return df.format(startTime) + " - " + dfHour.format(endTime);
 	}
 	
 	public boolean equals(Object o) {
