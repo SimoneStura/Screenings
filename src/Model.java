@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Model extends Observable {
 	private FilmFestival ff;
+	private File saveFile;
 	
 	public void newFilmFestival(String name) {
 		ff = new FilmFestival(name);
@@ -13,11 +14,17 @@ public class Model extends Observable {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
             ff = (FilmFestival) ois.readObject();
+            saveFile = file;
             ois.close();
 		} catch(Exception e) {
 			System.err.println(e);
 			System.exit(0);
 		}
+	}
+	
+	public void saveFilmFestival() {
+		if(saveFile == null) return;
+		saveFilmFestival(saveFile);
 	}
 	
 	public void saveFilmFestival(File file) {
@@ -34,6 +41,10 @@ public class Model extends Observable {
 	
 	public String getFFName() {
 		return ff.getName();
+	}
+	
+	public File getSaveFile() {
+		return saveFile;
 	}
 	
 	public Collection<Screening> getShows() {

@@ -2,12 +2,13 @@ import java.io.Serializable;
 import java.util.*;
 
 public class FilmFestival implements Serializable {
+	private static final long serialVersionUID = 8858739803531137363L;
 
 	private String name;
 	
-	transient private TreeSet<Screening> shows = new TreeSet<>((Screening s1, Screening s2) -> s1.compareTo(s2));
+	private TreeSet<Screening> shows = new TreeSet<>();
 	private ArrayList<Movie> movies = new ArrayList<>();
-	transient private HashMap<Movie,ArrayList<Screening>> screens = new HashMap<>();
+	private HashMap<Movie,ArrayList<Screening>> screens = new HashMap<>();
 	private List<Conflict<Screening>> confl = new ArrayList<>();
 	
 	public FilmFestival(String name) {

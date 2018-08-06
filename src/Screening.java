@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
 public class Screening implements PlacedOverTime<Screening>, Serializable{
+	private static final long serialVersionUID = 4637016489716615000L;
+	
 	private Movie m;
 	private Date startTime;
 	private Date endTime;

@@ -1,6 +1,8 @@
 import java.io.Serializable;
 
 public class Movie implements Comparable<Movie>, Serializable {
+	private static final long serialVersionUID = 5781125133996852924L;
+	
 	private String title;
 	private int year;
 	private int runtime;

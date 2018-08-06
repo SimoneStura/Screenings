@@ -27,9 +27,10 @@ public class Controller implements Initializable {
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Choose a file");
 		File file = fc.showOpenDialog(new Stage());
-		if(file != null)
+		if(file != null) {
 			dm.loadFilmFestival(file);
-		System.out.println("Open " + dm.getFFName());
+			System.out.println("Open " + dm.getFFName());
+		}
 	}
 	
 	@FXML

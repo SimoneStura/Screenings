@@ -1,6 +1,8 @@
 import java.io.Serializable;
 
 public class Conflict<E> implements Serializable {
+	private static final long serialVersionUID = 903399204246731979L;
+	
 	private E e1;
 	private E e2;
 	
