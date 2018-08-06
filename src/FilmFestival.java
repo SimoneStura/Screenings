@@ -1,13 +1,26 @@
+import java.io.Serializable;
 import java.util.*;
 
-public class FilmFestival {
+public class FilmFestival implements Serializable {
+
+	private String name;
 	
-	private TreeSet<Screening> shows = new TreeSet<>((Screening s1, Screening s2) -> s1.compareTo(s2));
+	transient private TreeSet<Screening> shows = new TreeSet<>((Screening s1, Screening s2) -> s1.compareTo(s2));
 	private ArrayList<Movie> movies = new ArrayList<>();
-	private HashMap<Movie,ArrayList<Screening>> screens = new HashMap<>();
+	transient private HashMap<Movie,ArrayList<Screening>> screens = new HashMap<>();
 	private List<Conflict<Screening>> confl = new ArrayList<>();
 	
-	public FilmFestival() {}
+	public FilmFestival(String name) {
+		setName(name);
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
+	}
 	
 	public boolean addScreen(Screening s) {
 		boolean ctrl = shows.add(s);
@@ -137,7 +150,7 @@ public class FilmFestival {
 	}
 	*/
 	public static void main(String[] args) {
-		FilmFestival tff = new FilmFestival();
+		FilmFestival tff = new FilmFestival("Torino Film Festival");
 		Movie m = new Movie("God Bless The Child", 2015, 92);
 		Calendar cal = Calendar.getInstance();
 		cal.set(2015,10,21,17,0);

@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Movie implements Comparable<Movie> {
+public class Movie implements Comparable<Movie>, Serializable {
 	private String title;
 	private int year;
 	private int runtime;

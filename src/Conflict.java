@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Conflict<E> {
+public class Conflict<E> implements Serializable {
 	private E e1;
 	private E e2;
 	

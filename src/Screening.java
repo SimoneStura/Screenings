@@ -1,8 +1,9 @@
 import java.util.Calendar;
 import java.util.Date;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
-public class Screening implements PlacedOverTime<Screening>{
+public class Screening implements PlacedOverTime<Screening>, Serializable{
 	private Movie m;
 	private Date startTime;
 	private Date endTime;
