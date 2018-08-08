@@ -10,8 +10,9 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	private Date startTime;
 	private Date endTime;
 	private Cinema cinema;
-	private int sala; //TRADURRE
-	private int minutesExtra;
+	private int theater;
+	private int minimumToWait;
+	private int minutesToWait;
 	private String notes;
 	private boolean hidden = false;
 	
@@ -33,13 +34,17 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 		endTime = new Date(startTime.getTime() + 60000 * m.getRuntime());
 	}
 	
-	public void setCinema(Cinema cinema, int sala) {
+	public void setCinema(Cinema cinema, int theater) {
 		this.cinema = cinema;
-		this.sala = sala;
+		this.theater = theater;
 	}
 	
-	public void setMinutesExtra(int minutesExtra) {
-		this.minutesExtra = minutesExtra;
+	public void setMinutesToWait(int minutesToWait) {
+		this.minutesToWait = minutesToWait;
+	}
+	
+	public void setMinimumToWait(int minimumToWait) {
+		this.minimumToWait = minimumToWait;
 	}
 	
 	public void setNotes(String notes) {
@@ -62,12 +67,20 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 		return cinema;
 	}
 	
-	public int getSala() {
-		return sala;
+	public int getTheater() {
+		return theater;
+	}
+	
+	public int getMinimumToWait() {
+		return minimumToWait;
+	}
+	
+	public int getMinutesToWait() {
+		return minutesToWait;
 	}
 	
 	public int getMinutesExtra() {
-		return minutesExtra;
+		return Math.max(minimumToWait, minutesToWait);
 	}
 	
 	public String getNotes() {
@@ -75,9 +88,9 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	}
 	
 	public int gap(Screening s) {
-		int distance1 = (int) (s.startTime.getTime() - this.endTime.getTime()) / 60000;
+		int distance1 = ((int) (s.startTime.getTime() - this.endTime.getTime()) / 60000) - this.getMinutesExtra();
 		if(distance1 > 0) return distance1;
-		int distance2 = (int) (this.startTime.getTime() - s.endTime.getTime()) / 60000;
+		int distance2 = ((int) (this.startTime.getTime() - s.endTime.getTime()) / 60000) - s.getMinutesExtra();
 		if(distance2 <= 0) return 0;
 		return Math.negateExact(distance2);
 	}
@@ -90,7 +103,7 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 		if(!(o instanceof Screening)) return false;
 		Screening s = (Screening) o;
 		return this.m.equals(s.m) && this.startTime.equals(s.startTime) 
-				&& this.cinema.equals(s.cinema) && this.sala == s.sala;
+				&& this.cinema.equals(s.cinema) && this.theater == s.theater;
 	}
 	
 	public int compareTo(Screening s) {
@@ -100,6 +113,8 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 				if(m.compareTo(s.m) == 0) {
 					if(cinema == null)
 						cmp = 0;
+					else if(cinema.compareTo(s.cinema) == 0)
+						cmp = theater - s.theater;
 					else
 						cmp = cinema.compareTo(s.cinema);
 				}
@@ -121,15 +136,7 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	}
 	
 	public static boolean isConflict(Screening s1, Screening s2) {
-		return isConflict(s1, s2, 0);
-	}
-	
-	public static boolean isConflict(Screening s1, Screening s2, int minutesBtw) {
-		long distance = s2.startTime.getTime() - s1.endTime.getTime();
-		if(distance/60000 > minutesBtw) return false;
-		distance = s1.startTime.getTime() - s2.endTime.getTime();
-		if(distance/60000 > minutesBtw) return false;
-		return true;
+		return s1.gap(s2) != 0;
 	}
 	
 	public static void main(String[] args) {
