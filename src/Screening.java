@@ -9,20 +9,17 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	private Movie m;
 	private Date startTime;
 	private Date endTime;
-	private String cinema = "";
-	private boolean obscured = false;
+	private Cinema cinema;
+	private int sala; //TRADURRE
+	private int minutesExtra;
+	private String notes;
+	private boolean hidden = false;
 	
 	private static SimpleDateFormat df = new SimpleDateFormat("EEE dd/MM HH:mm");
 	private static SimpleDateFormat dfHour = new SimpleDateFormat("HH:mm");
 	
 	public Screening(Movie m, Date startTime) {
 		this.m = m;
-		setStartTime(startTime);
-	}
-	
-	public Screening(Movie m, Date startTime, String cinema) {
-		this.m = m;
-		this.cinema = cinema;
 		setStartTime(startTime);
 	}
 	
@@ -36,8 +33,17 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 		endTime = new Date(startTime.getTime() + 60000 * m.getRuntime());
 	}
 	
-	public void setCinema(String cinema) {
+	public void setCinema(Cinema cinema, int sala) {
 		this.cinema = cinema;
+		this.sala = sala;
+	}
+	
+	public void setMinutesExtra(int minutesExtra) {
+		this.minutesExtra = minutesExtra;
+	}
+	
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 	
 	public Movie getM() {
@@ -52,8 +58,20 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 		return endTime;
 	}
 	
-	public String getCinema() {
+	public Cinema getCinema() {
 		return cinema;
+	}
+	
+	public int getSala() {
+		return sala;
+	}
+	
+	public int getMinutesExtra() {
+		return minutesExtra;
+	}
+	
+	public String getNotes() {
+		return notes;
 	}
 	
 	public int gap(Screening s) {
@@ -72,15 +90,19 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 		if(!(o instanceof Screening)) return false;
 		Screening s = (Screening) o;
 		return this.m.equals(s.m) && this.startTime.equals(s.startTime) 
-				&& this.cinema.equals(s.cinema);
+				&& this.cinema.equals(s.cinema) && this.sala == s.sala;
 	}
 	
 	public int compareTo(Screening s) {
 		int cmp = 0;
 		if(startTime.compareTo(s.startTime) == 0) {
 			if(endTime.compareTo(s.endTime) == 0) {
-				if(m.compareTo(s.m) == 0)
-					cmp = cinema.compareTo(s.cinema);
+				if(m.compareTo(s.m) == 0) {
+					if(cinema == null)
+						cmp = 0;
+					else
+						cmp = cinema.compareTo(s.cinema);
+				}
 				else
 					cmp = m.compareTo(s.m);
 			} else
@@ -90,12 +112,12 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 		return cmp;
 	}
 	
-	public boolean isObscured() {
-		return obscured;
+	public boolean isHidden() {
+		return hidden;
 	}
 	
-	public void obscure(boolean b) {
-		obscured = b;
+	public void hide(boolean b) {
+		hidden = b;
 	}
 	
 	public static boolean isConflict(Screening s1, Screening s2) {

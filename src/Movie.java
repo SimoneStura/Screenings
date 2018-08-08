@@ -6,6 +6,8 @@ public class Movie implements Comparable<Movie>, Serializable {
 	private String title;
 	private int year;
 	private int runtime;
+	private String directedBy;
+	private String section;
 	
 	public Movie(String title, int year, int runtime) {
 		this.title = title;
@@ -21,8 +23,12 @@ public class Movie implements Comparable<Movie>, Serializable {
 		this.year = year;
 	}
 	
-	public void setRuntime(int runtime) {
-		this.runtime = runtime;
+	public void setDirectedBy(String directors) {
+		directedBy = directors;
+	}
+	
+	public void setSection(String section) {
+		this.section = section;
 	}
 	
 	public String getTitle() {
@@ -35,6 +41,14 @@ public class Movie implements Comparable<Movie>, Serializable {
 	
 	public int getRuntime() {
 		return runtime;
+	}
+	
+	public String getDirectedBy() {
+		return directedBy;
+	}
+	
+	public String getSection() {
+		return section;
 	}
 	
 	public String toString() {
