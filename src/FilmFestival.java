@@ -5,27 +5,52 @@ public class FilmFestival implements Serializable {
 	private static final long serialVersionUID = 8858739803531137363L;
 
 	private String name;
+	private Date firstDay = null;
+	private Date lastDay = null;
+	private int minimumToWait;
 	
 	private TreeSet<Screening> shows = new TreeSet<>();
 	private ArrayList<Movie> movies = new ArrayList<>();
 	private HashMap<Movie,ArrayList<Screening>> screens = new HashMap<>();
 	private List<Conflict<Screening>> confl = new ArrayList<>();
 	
-	public FilmFestival(String name) {
+	public FilmFestival(String name, int minimumToWait) {
 		setName(name);
+		setMinimumToWait(minimumToWait);
 	}
 	
 	public void setName(String name) {
 		this.name = name;
+		
+	}
+	
+	public void setMinimumToWait(int minimumToWait) {
+		this.minimumToWait = minimumToWait;
 	}
 	
 	public String getName() {
 		return name;
 	}
 	
+	public Date getFirstDay() {
+		return firstDay;
+	}
+	
+	public Date getLastDay() {
+		return lastDay;
+	}
+	
+	public int getMinimumToWait() {
+		return minimumToWait;
+	}
+	
 	public boolean addScreen(Screening s) {
 		boolean ctrl = shows.add(s);
 		if(ctrl) {
+			if(firstDay == null || firstDay.compareTo(s.getStartTime()) > 0)
+				firstDay = s.getStartTime();
+			if(lastDay == null || lastDay.compareTo(s.getStartTime()) > 0)
+				lastDay = s.getStartTime();
 			Movie m = s.getM();
 			if(!(movies.contains(m))) {
 				movies.add(m);
@@ -151,7 +176,7 @@ public class FilmFestival implements Serializable {
 	}
 	*/
 	public static void main(String[] args) {
-		FilmFestival tff = new FilmFestival("Torino Film Festival");
+		FilmFestival tff = new FilmFestival("Torino Film Festival", 10);
 		Movie m = new Movie("God Bless The Child", 2015, 92);
 		Calendar cal = Calendar.getInstance();
 		cal.set(2015,10,21,17,0);

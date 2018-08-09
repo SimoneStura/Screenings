@@ -6,8 +6,11 @@ public class Model extends Observable {
 	private FilmFestival ff;
 	private File saveFile;
 	
-	public void newFilmFestival(String name) {
-		ff = new FilmFestival(name);
+	public void newFilmFestival(String name, int minimumBtwMovies) {
+		ff = new FilmFestival(name, minimumBtwMovies);
+		Calendar cal = Calendar.getInstance();
+		cal.set(2015,10,21,17,0);
+		ff.addScreen(new Screening(new Movie("La La Land", 2016, 128), cal.getTime()));
 	}
 	
 	public void loadFilmFestival(File file) {
@@ -39,8 +42,8 @@ public class Model extends Observable {
 		}
 	}
 	
-	public String getFFName() {
-		return ff.getName();
+	public FilmFestival getFilmFestival() {
+		return ff;
 	}
 	
 	public File getSaveFile() {
