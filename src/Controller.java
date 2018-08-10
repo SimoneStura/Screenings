@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -60,6 +61,12 @@ public class Controller implements Initializable {
 		if(file != null)
 			dm.saveFilmFestival(file);
 		System.out.println("Save!");
+	}
+	
+	@FXML
+	public void handleExitAction() {
+		System.out.println("ABRAKADABRA VIA DI QUA");
+		Platform.exit();
 	}
 	
 	//BUTTONS HANDLERS

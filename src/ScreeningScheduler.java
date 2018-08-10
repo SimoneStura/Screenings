@@ -1,7 +1,6 @@
 import java.io.IOException;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.*;
@@ -23,7 +22,7 @@ public class ScreeningScheduler extends Application {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("View.fxml"));
         loader.setController(controller);
         stage.setScene(new Scene(loader.load()));
-        stage.setOnCloseRequest((WindowEvent event) -> { Platform.exit();});
+        stage.setOnCloseRequest((WindowEvent event) -> {controller.handleExitAction();});
         stage.setTitle("ScreeSched");
         stage.show();
 
