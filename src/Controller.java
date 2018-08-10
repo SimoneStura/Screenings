@@ -22,6 +22,7 @@ public class Controller implements Initializable {
 	
 	private Model dm;
 	private FilmFestival ff;
+	private File saveFile;
 	private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("EEE dd/MM/yyyy");
 	
 	public Controller(Model dm) {
@@ -44,7 +45,8 @@ public class Controller implements Initializable {
 		fc.setTitle("Choose a file");
 		File file = fc.showOpenDialog(new Stage());
 		if(file != null) {
-			dm.loadFilmFestival(file);
+			saveFile = file;
+			dm.loadFilmFestival(saveFile);
 			ff = dm.getFilmFestival();
 			refreshLabels();
 			setMoviesView();
@@ -55,12 +57,17 @@ public class Controller implements Initializable {
 	
 	@FXML
 	private void handleSaveAction() {
+		if(dm.saveFilmFestival()) return;
+		handleSaveAsAction();
+	}
+	
+	@FXML
+	private void handleSaveAsAction() {
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Choose a file");
 		File file = fc.showSaveDialog(new Stage());
 		if(file != null)
 			dm.saveFilmFestival(file);
-		System.out.println("Save!");
 	}
 	
 	@FXML
@@ -123,7 +130,7 @@ public class Controller implements Initializable {
 	}
 	
 	private void setMoviesView() {
-		columnTitle.setCellValueFactory(cellData -> cellData.getValue().getTitleProperty());
+		columnTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
 		columnYear.setCellValueFactory(new PropertyValueFactory<>("year"));
 		columnRuntime.setCellValueFactory(new PropertyValueFactory<>("runtime"));
 		

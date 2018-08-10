@@ -16,30 +16,34 @@ public class Model extends Observable {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
 					new FileInputStream(file)));
-            ff = (FilmFestival) ois.readObject();
+			FilmFestivalSerialize ffs = (FilmFestivalSerialize) ois.readObject();
+			ff = ffs.observe();
             saveFile = file;
             ois.close();
 		} catch(Exception e) {
-			System.err.println(e);
+			e.printStackTrace();
 			System.exit(0);
 		}
 	}
 	
-	public void saveFilmFestival() {
-		if(saveFile == null) return;
-		saveFilmFestival(saveFile);
+	public boolean saveFilmFestival() {
+		if(saveFile == null) return false;
+		return saveFilmFestival(saveFile);
 	}
 	
-	public void saveFilmFestival(File file) {
+	public boolean saveFilmFestival(File file) {
+		if(ff == null) return false;
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(
                     new FileOutputStream(file)));
-            oos.writeObject(ff);
+			FilmFestivalSerialize ffs = new FilmFestivalSerialize(ff);
+            oos.writeObject(ffs);
             oos.close();
 		} catch(IOException e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
+		return true;
 	}
 	
 	public FilmFestival getFilmFestival() {

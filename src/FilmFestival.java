@@ -1,13 +1,10 @@
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
 import javafx.collections.*;
 
-public class FilmFestival implements Serializable {
-	private static final long serialVersionUID = 8858739803531137363L;
-
+public class FilmFestival {
 	private String name;
 	private LocalDate firstDay = null;
 	private LocalDate lastDay = null;

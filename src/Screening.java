@@ -16,8 +16,8 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	private String notes;
 	private boolean hidden = false;
 
-	private DateTimeFormatter dateHour = DateTimeFormatter.ofPattern("EEE dd/MM HH:mm");
-	private DateTimeFormatter hour = DateTimeFormatter.ofPattern("HH:mm");
+	private static DateTimeFormatter dateHour = DateTimeFormatter.ofPattern("EEE dd/MM HH:mm");
+	private static DateTimeFormatter hour = DateTimeFormatter.ofPattern("HH:mm");
 	
 	public Screening(Movie m, LocalDateTime startTime) {
 		this.m = m;
