@@ -1,5 +1,4 @@
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class StringTest implements PlacedOverTime<StringTest> {
 	private String s;
@@ -21,16 +20,12 @@ public class StringTest implements PlacedOverTime<StringTest> {
 		return start - st.start;
 	}
 	
-	public Date getStartTime() {
-		Calendar cal = Calendar.getInstance();
-		cal.set(2018,6,5,start,0);
-		return cal.getTime();
+	public LocalDateTime getStartTime() {
+		return LocalDateTime.of(2018,6,5,start,0);
 	}
 
-	public Date getEndTime() {
-		Calendar cal = Calendar.getInstance();
-		cal.set(2018,6,5,end,0);
-		return cal.getTime();
+	public LocalDateTime getEndTime() {
+		return LocalDateTime.of(2018,6,5,start,0);
 	}
 	
 	public static boolean isConflict(StringTest s1, StringTest s2) {

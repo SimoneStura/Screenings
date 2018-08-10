@@ -1,37 +1,32 @@
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 
 public class Screening implements PlacedOverTime<Screening>, Serializable{
 	private static final long serialVersionUID = 4637016489716615000L;
 	
 	private Movie m;
-	private Date startTime;
-	private Date endTime;
+	private LocalDateTime startTime;
+	private LocalDateTime endTime;
 	private Cinema cinema;
 	private int theater;
-	private int minimumToWait;
-	private int minutesToWait;
+	private int minimumToWait = 0;
+	private int minutesToWait = 0;
 	private String notes;
 	private boolean hidden = false;
+
+	private DateTimeFormatter dateHour = DateTimeFormatter.ofPattern("EEE dd/MM HH:mm");
+	private DateTimeFormatter hour = DateTimeFormatter.ofPattern("HH:mm");
 	
-	private static SimpleDateFormat df = new SimpleDateFormat("EEE dd/MM HH:mm");
-	private static SimpleDateFormat dfHour = new SimpleDateFormat("HH:mm");
-	
-	public Screening(Movie m, Date startTime) {
+	public Screening(Movie m, LocalDateTime startTime) {
 		this.m = m;
 		setStartTime(startTime);
 	}
 	
-	public void setMovie(Movie m) {
-		this.m = m;
-		setStartTime(this.startTime);
-	}
-	
-	public void setStartTime(Date startTime) {
+	public void setStartTime(LocalDateTime startTime) {
 		this.startTime = startTime;
-		endTime = new Date(startTime.getTime() + 60000 * m.getRuntime());
+		endTime = startTime.plusMinutes(m.getRuntime());
 	}
 	
 	public void setCinema(Cinema cinema, int theater) {
@@ -55,11 +50,11 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 		return m;
 	}
 	
-	public Date getStartTime() {
+	public LocalDateTime getStartTime() {
 		return startTime;
 	}
 	
-	public Date getEndTime() {
+	public LocalDateTime getEndTime() {
 		return endTime;
 	}
 	
@@ -88,22 +83,25 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	}
 	
 	public int gap(Screening s) {
-		int distance1 = ((int) (s.startTime.getTime() - this.endTime.getTime()) / 60000) - this.getMinutesExtra();
+		int distance1 = ((int) (ChronoUnit.MINUTES.between(this.endTime, s.startTime)))
+				- this.getMinutesExtra();
 		if(distance1 > 0) return distance1;
-		int distance2 = ((int) (this.startTime.getTime() - s.endTime.getTime()) / 60000) - s.getMinutesExtra();
-		if(distance2 <= 0) return 0;
-		return Math.negateExact(distance2);
+		int distance2 = ((int) (ChronoUnit.MINUTES.between(this.startTime, s.endTime)))
+				+ s.getMinutesExtra();
+		if(distance2 < 0) return distance2;
+		return 0;
 	}
 	
 	public String toString() {
-		return df.format(startTime) + " - " + dfHour.format(endTime);
+		return startTime.format(dateHour) + " - " + endTime.format(hour);
 	}
 	
 	public boolean equals(Object o) {
 		if(!(o instanceof Screening)) return false;
 		Screening s = (Screening) o;
 		return this.m.equals(s.m) && this.startTime.equals(s.startTime) 
-				&& this.cinema.equals(s.cinema) && this.theater == s.theater;
+				&& (this.cinema == null || s.cinema == null 
+				|| (this.cinema.equals(s.cinema) && this.theater == s.theater));
 	}
 	
 	public int compareTo(Screening s) {
@@ -136,18 +134,14 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	}
 	
 	public static boolean isConflict(Screening s1, Screening s2) {
-		return s1.gap(s2) != 0;
+		return s1.gap(s2) == 0;
 	}
 	
 	public static void main(String[] args) {
 		Movie m = new Movie("La La Land", 2016, 128);
-		Calendar cal = Calendar.getInstance();
-		cal.set(2018,6,5,21,45);
-		Screening s1 = new Screening(m, cal.getTime());
-		cal.set(2018,6,5,22,45);
-		Screening s2 = new Screening(m, cal.getTime());
-		cal.set(2018,6,5,19,30);
-		Screening s3 = new Screening(m, cal.getTime());
+		Screening s1 = new Screening(m, LocalDateTime.of(2018,6,5,21,45));
+		Screening s2 = new Screening(m, LocalDateTime.of(2018,6,5,21,45));
+		Screening s3 = new Screening(m, LocalDateTime.of(2018,6,5,19,30));
 		System.out.println(s1 + " " + s1.getM());
 		System.out.println(s2 + " " + s2.getM());
 		System.out.println(s3 + " " + s3.getM());

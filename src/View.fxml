@@ -1,39 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Font?>
 
-<VBox minHeight="300.0" minWidth="400.0" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<VBox minHeight="300.0" minWidth="400.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.151" xmlns:fx="http://javafx.com/fxml/1">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#handleNewAction" text="New" />
-            <MenuItem mnemonicParsing="false" onAction="#handleOpenAction" text="Open…" />
-            <Menu mnemonicParsing="false" text="Open Recent" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Close" />
-            <MenuItem mnemonicParsing="false" onAction="#handleSaveAction" text="Save" />
-            <MenuItem mnemonicParsing="false" text="Save As…" />
-            <MenuItem mnemonicParsing="false" text="Revert" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Preferences…" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
+            <MenuItem mnemonicParsing="false" onAction="#handleNewAction" text="Nuovo" />
+            <MenuItem mnemonicParsing="false" onAction="#handleOpenAction" text="Apri..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#handleSaveAction" text="Salva" />
+            <MenuItem mnemonicParsing="false" text="Salva Con Nome" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Esci" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
@@ -84,10 +76,10 @@
       <children>
         <TableView id="MoviesView" fx:id="moviesView" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
           <columns>
-            <TableColumn editable="true" maxWidth="5000.0" minWidth="10.0" prefWidth="270.0" text="Titolo" fx:id="columnTitle" />
-            <TableColumn prefWidth="75.0" text="Anno" fx:id="columnYear" />
-            <TableColumn prefWidth="75.0" text="Durata" fx:id="columnRuntime" />
-            <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="120.0" text="Num Proiezioni" fx:id="columnNumScreens" />
+            <TableColumn fx:id="columnTitle" editable="true" maxWidth="5000.0" minWidth="10.0" prefWidth="270.0" text="Titolo" />
+            <TableColumn fx:id="columnYear" prefWidth="75.0" text="Anno" />
+            <TableColumn fx:id="columnRuntime" prefWidth="75.0" text="Durata" />
+            <TableColumn fx:id="columnNumScreens" maxWidth="5000.0" minWidth="10.0" prefWidth="120.0" text="Num Proiezioni" />
           </columns>
         </TableView>
         <VBox alignment="TOP_CENTER" maxHeight="-1.0" maxWidth="-Infinity" prefHeight="276.0" prefWidth="200.0" HBox.hgrow="NEVER">

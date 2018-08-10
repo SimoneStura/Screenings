@@ -1,10 +1,10 @@
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public interface PlacedOverTime<E> extends Comparable<E> {
 	
-	public Date getStartTime();
+	public LocalDateTime getStartTime();
 
-	public Date getEndTime();
+	public LocalDateTime getEndTime();
 
 	/*
 	 * Se i due elementi si sovrappongono il metodo ritorna 0

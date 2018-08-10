@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -323,7 +324,6 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 		int currentDay = 0;
 		Map<E,Integer> previousDay = new HashMap<>();
 		Map<E,Integer> previousGap = new HashMap<>();
-		Map<Integer, Eating> dayMeal = new HashMap<>();
 		
 		boolean bound(E e, int bestDay, int bestGap) {
 			if(sol.size() == 0) return true;
@@ -335,25 +335,14 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 			}
 			E last = sol.last();
 			int newGap = last.gap(e);
-			Calendar calLast = Calendar.getInstance();
-			Calendar calThis = Calendar.getInstance();
-			calLast.setTime(last.getStartTime());
-			calThis.setTime(e.getStartTime());
-			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE)) {
+			LocalDate lastDate = last.getStartTime().toLocalDate();
+			LocalDate thisDate = e.getStartTime().toLocalDate();
+			if(!(lastDate.equals(thisDate))) {
 				if(currentDay == bestDay)
 					return maximumGap > bestGap;
 				else
 					return currentDay > bestDay;
 			}
-			calLast.setTime(last.getEndTime());
-			int day = calLast.get(Calendar.DATE);
-			int hour = calLast.get(Calendar.HOUR_OF_DAY);
-			Eating eat = dayMeal.get(day);
-			if(eat == null)
-				return Math.max(newGap, maximumGap) < bestGap;
-			if(((!eat.lunch && (hour == 11 || hour == 12 || hour == 13)) ||
-					(!eat.dinner && (hour == 19 || hour == 20 || hour == 21))) && newGap >= 40)
-				return maximumGap < bestGap;
 			return Math.max(newGap, maximumGap) < bestGap;
 		}
 		
@@ -369,32 +358,14 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 			previousDay.put(last, minimumForDay);
 			int newGap = last.gap(e);
 			
-			Calendar calLast = Calendar.getInstance();
-			Calendar calThis = Calendar.getInstance();
-			calLast.setTime(last.getStartTime());
-			calThis.setTime(e.getStartTime());
-			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE)) {
+			LocalDate lastDate = last.getStartTime().toLocalDate();
+			LocalDate thisDate = e.getStartTime().toLocalDate();
+			if(!(lastDate.equals(thisDate))) {
 				minimumForDay = Math.min(minimumForDay, currentDay);
 				currentDay = 1;
 				return;
 			}
 			currentDay++;
-			calLast.setTime(last.getEndTime());
-			int day = calLast.get(Calendar.DATE);
-			int hour = calLast.get(Calendar.HOUR_OF_DAY);
-			Eating eat = dayMeal.get(day);
-			if(eat == null) {
-				dayMeal.put(day, new Eating());
-				eat = dayMeal.get(day);
-			}
-			if(!eat.lunch && (hour == 11 || hour == 12 || hour == 13) && newGap >= 40) {
-				eat.lunch = true;
-				return;
-			}
-			if(!eat.dinner && (hour == 19 || hour == 20 || hour == 21) && newGap >= 40) {
-				eat.dinner = true;
-				return;
-			}
 			if(newGap > maximumGap)
 				maximumGap = newGap;
 		}
@@ -405,34 +376,13 @@ public class ConflictsSolver<E extends PlacedOverTime<E>> {
 			E last = sol.last();
 			maximumGap = previousGap.get(last);
 			minimumForDay = previousDay.get(last);
-			int oldGap = last.gap(e);
-			
-			Calendar calLast = Calendar.getInstance();
-			Calendar calThis = Calendar.getInstance();
-			calLast.setTime(last.getStartTime());
-			calThis.setTime(e.getStartTime());
-			if(calLast.get(Calendar.DATE) != calThis.get(Calendar.DATE)) {
+
+			LocalDate lastDate = last.getStartTime().toLocalDate();
+			LocalDate thisDate = e.getStartTime().toLocalDate();
+			if(!(lastDate.equals(thisDate)))
 				currentDay = minimumForDay;
-				return;
-			}
-			currentDay--;
-			calLast.setTime(last.getEndTime());
-			int day = calLast.get(Calendar.DATE);
-			int hour = calLast.get(Calendar.HOUR_OF_DAY);
-			Eating eat = dayMeal.get(day);
-			if(eat.lunch && (hour == 11 || hour == 12 || hour == 13) && oldGap >= 40) {
-				eat.lunch = false;
-				return;
-			}
-			if(eat.dinner && (hour == 19 || hour == 20 || hour == 21) && oldGap >= 40) {
-				eat.dinner = false;
-				return;
-			}
+			else
+				currentDay--;
 		}
-	}
-	
-	private class Eating {
-		boolean lunch = false;
-		boolean dinner = false;
 	}
 }

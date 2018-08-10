@@ -1,11 +1,14 @@
 import java.io.File;
 import java.net.URL;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.*;
 import javafx.stage.*;
 
 public class Controller implements Initializable {
@@ -18,7 +21,7 @@ public class Controller implements Initializable {
 	
 	private Model dm;
 	private FilmFestival ff;
-	private SimpleDateFormat dateForm = new SimpleDateFormat("EEE dd/MM/yyyy");
+	private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("EEE dd/MM/yyyy");
 	
 	public Controller(Model dm) {
 		this.dm = dm;
@@ -29,6 +32,7 @@ public class Controller implements Initializable {
 		dm.newFilmFestival("Torino Film Festival", 10);
 		ff = dm.getFilmFestival();
 		refreshLabels();
+		setMoviesView();
 		addMovie.setDisable(false);
 		System.out.println("New!");
 	}
@@ -42,6 +46,7 @@ public class Controller implements Initializable {
 			dm.loadFilmFestival(file);
 			ff = dm.getFilmFestival();
 			refreshLabels();
+			setMoviesView();
 			addMovie.setDisable(false);
 			System.out.println("Open " + ff.getName());
 		}
@@ -61,27 +66,29 @@ public class Controller implements Initializable {
 	
 	@FXML
 	private void handleAddMovie() {
-		
+		ff.addScreen(new Screening(new Movie("Lo Lo Lond", 2016, 120), LocalDateTime.of(2015,10,2,14,0)));
+		refreshLabels();
+		System.out.println("add movie");
 	}
 	
 	@FXML
 	private void handleAddScreening() {
-		
+		System.out.println("add screening");
 	}
 	
 	@FXML
 	private void handleRemove() {
-		
+		System.out.println("remove movie");
 	}
 	
 	@FXML
 	private void handleSchedule() {
-		
+		System.out.println("schedule");
 	}
 	
 	@FXML
 	private void handleViewScheduling() {
-		
+		System.out.println("view scheduling");
 	}
 	
 	public void refreshView() {
@@ -90,22 +97,30 @@ public class Controller implements Initializable {
 	
 	private void refreshLabels() {
 		festivalName.setText(ff.getName());
-		Date first = ff.getFirstDay();
+		LocalDate first = ff.getFirstDay();
 		if(first == null)
 			firstDay.setText("Inizio:           ");
 		else
-			firstDay.setText("Inizio: " + dateForm.format(first));
-		Date last = ff.getLastDay();
+			firstDay.setText("Inizio: " + first.format(dateFormat));
+		LocalDate last = ff.getLastDay();
 		if(last == null)
 			lastDay.setText("Fine:           ");
 		else
-			lastDay.setText("Fine: " + dateForm.format(first));
+			lastDay.setText("Fine: " + last.format(dateFormat));
 		minTime.setText(Integer.toString(ff.getMinimumToWait()) + " minuti");
 		festivalName.setVisible(true);
 		firstDay.setVisible(true);
 		lastDay.setVisible(true);
 		minTimeLabel.setVisible(true);
 		minTime.setVisible(true);
+	}
+	
+	private void setMoviesView() {
+		columnTitle.setCellValueFactory(cellData -> cellData.getValue().getTitleProperty());
+		columnYear.setCellValueFactory(new PropertyValueFactory<>("year"));
+		columnRuntime.setCellValueFactory(new PropertyValueFactory<>("runtime"));
+		
+		moviesView.setItems(ff.getMovies());
 	}
 
 	@Override
