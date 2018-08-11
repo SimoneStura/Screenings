@@ -8,21 +8,21 @@ import javafx.stage.*;
 public class ScreeningScheduler extends Application {
 	
 	private Model model;
-	private Controller controller;
+	private FFController fFController;
 	
 	private void setModel() {
 		model = new Model();
 	}
 	
 	private void setController() {
-		controller = new Controller(model);
+		fFController = new FFController(model);
 	}
 	
 	private void initView(Stage stage) throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("View.fxml"));
-        loader.setController(controller);
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("FFView.fxml"));
+        loader.setController(fFController);
         stage.setScene(new Scene(loader.load()));
-        stage.setOnCloseRequest((WindowEvent event) -> {controller.handleExitAction();});
+        stage.setOnCloseRequest((WindowEvent event) -> {fFController.handleExitAction();});
         stage.setTitle("ScreeSched");
         stage.show();
 

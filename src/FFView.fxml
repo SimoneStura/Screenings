@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox minHeight="300.0" minWidth="400.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox minHeight="300.0" minWidth="400.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -23,34 +23,29 @@
             <MenuItem mnemonicParsing="false" onAction="#handleOpenAction" text="Apri..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#handleSaveAction" text="Salva" />
-            <MenuItem mnemonicParsing="false" text="Salva Con Nome" />
+            <MenuItem mnemonicParsing="false" onAction="#handleSaveAsAction" text="Salva Con Nome" />
                   <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#handleExitAction" text="Esci" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Modifica">
           <items>
-            <MenuItem mnemonicParsing="false" text="Undo" />
-            <MenuItem mnemonicParsing="false" text="Redo" />
+            <MenuItem disable="true" mnemonicParsing="false" text="Annulla" />
+            <MenuItem disable="true" mnemonicParsing="false" text="Ripristina" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Cut" />
-            <MenuItem mnemonicParsing="false" text="Copy" />
-            <MenuItem mnemonicParsing="false" text="Paste" />
-            <MenuItem mnemonicParsing="false" text="Delete" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Select All" />
-            <MenuItem mnemonicParsing="false" text="Unselect All" />
+            <MenuItem mnemonicParsing="false" text="Preferenze Film Festival" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Strumenti">
           <items>
-            <MenuItem mnemonicParsing="false" text="Undo" />
-            <MenuItem mnemonicParsing="false" text="Redo" />
+            <MenuItem mnemonicParsing="false" text="Tutte le Proiezioni" />
+            <MenuItem disable="true" mnemonicParsing="false" text="Importa Scheduling" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Aiuto">
           <items>
-            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+            <MenuItem mnemonicParsing="false" text="How To..." />
+                  <MenuItem mnemonicParsing="false" text="FAQs" />
           </items>
         </Menu>
       </menus>
@@ -92,7 +87,7 @@
                 <Insets left="5.0" right="5.0" top="10.0" />
               </VBox.margin>
             </Label>
-            <Label fx:id="firstDay" text="First Day: 88/88/8888" wrapText="true" VBox.vgrow="SOMETIMES">
+            <Label fx:id="firstDay" text="First Day: ooo 88/88/8888" wrapText="true" VBox.vgrow="SOMETIMES">
               <font>
                 <Font name="Comfortaa Regular" size="13.0" fx:id="x2" />
               </font>
@@ -100,7 +95,7 @@
                 <Insets left="5.0" right="5.0" top="10.0" />
               </VBox.margin>
             </Label>
-            <Label fx:id="lastDay" font="$x2" text="Last Day: 88/88/8888" wrapText="true" VBox.vgrow="SOMETIMES">
+            <Label fx:id="lastDay" font="$x2" text="Last Day: ooo 88/88/8888" wrapText="true" VBox.vgrow="SOMETIMES">
               <VBox.margin>
                 <Insets left="5.0" right="5.0" top="10.0" />
               </VBox.margin>

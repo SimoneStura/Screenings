@@ -7,9 +7,10 @@ public class Model extends Observable {
 	private FilmFestival ff;
 	private File saveFile;
 	
-	public void newFilmFestival(String name, int minimumBtwMovies) {
+	public FilmFestival newFilmFestival(String name, int minimumBtwMovies) {
 		ff = new FilmFestival(name, minimumBtwMovies);
 		ff.addScreen(new Screening(new Movie("La La Land", 2016, 128), LocalDateTime.of(2015,10,21,17,0)));
+		return ff;
 	}
 	
 	public void loadFilmFestival(File file) {

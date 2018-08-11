@@ -1,18 +1,20 @@
 import java.io.File;
+//import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+//import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+//import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
 import javafx.stage.*;
 
-public class Controller implements Initializable {
+public class FFController implements Initializable {
 	
 	@FXML private Label festivalName, firstDay, lastDay, minTimeLabel, minTime;
 	@FXML private Button addMovie, addScreening, remove, schedule, viewScheduling;
@@ -25,14 +27,14 @@ public class Controller implements Initializable {
 	private File saveFile;
 	private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("EEE dd/MM/yyyy");
 	
-	public Controller(Model dm) {
+	public FFController(Model dm) {
 		this.dm = dm;
 	}
 	
 	@FXML
 	private void handleNewAction() {
-		dm.newFilmFestival("Torino Film Festival", 10);
-		ff = dm.getFilmFestival();
+		ff = FFSettingsController.display("Nuovo Film Festival", dm);
+		if(ff == null) return;
 		refreshLabels();
 		setMoviesView();
 		addMovie.setDisable(false);
@@ -80,8 +82,6 @@ public class Controller implements Initializable {
 	
 	@FXML
 	private void handleAddMovie() {
-		ff.addScreen(new Screening(new Movie("Lo Lo Lond", 2016, 120), LocalDateTime.of(2015,10,2,14,0)));
-		refreshLabels();
 		System.out.println("add movie");
 	}
 	

@@ -1,6 +1,5 @@
 import java.io.Serializable;
 
-
 public class FilmFestivalSerialize implements Serializable {
 	private static final long serialVersionUID = 8858739803531137363L;
 	private String name;
