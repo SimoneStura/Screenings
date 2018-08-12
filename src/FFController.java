@@ -93,6 +93,8 @@ public class FFController implements Initializable {
 	@FXML
 	private void handleAddScreening() {
 		System.out.println("add screening");
+		Movie selected = moviesView.getSelectionModel().getSelectedItem();
+		AddScreeningController.display("Nuova Proiezione", ff, selected);
 	}
 	
 	@FXML
@@ -142,6 +144,18 @@ public class FFController implements Initializable {
 		
 		moviesView.setItems(ff.getMovies());
 	}
+	
+	private void selectionListener() {
+        moviesView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection == null) {
+        		addScreening.setDisable(true);
+        		remove.setDisable(true);
+            } else {
+        		addScreening.setDisable(false);
+        		remove.setDisable(false);
+            }
+        });
+	}
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
@@ -157,6 +171,8 @@ public class FFController implements Initializable {
 		remove.setDisable(true);
 		schedule.setDisable(true);
 		viewScheduling.setDisable(true);
+		
+		selectionListener();
 	}
 
 }

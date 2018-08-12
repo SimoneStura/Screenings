@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -95,22 +96,16 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                <children>
-                  <Label alignment="CENTER" text="Ora Fine">
+                  <Label alignment="CENTER" text="Note: ">
                      <HBox.margin>
                         <Insets bottom="10.0" top="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="endHour" alignment="CENTER" editable="false" prefHeight="25.0" prefWidth="40.0">
+                  <TextArea fx:id="notes" prefHeight="200.0" prefWidth="200.0">
                      <HBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
+                        <Insets bottom="10.0" left="5.0" right="10.0" top="10.0" />
                      </HBox.margin>
-                  </TextField>
-                  <Label alignment="CENTER" text=":" />
-                  <TextField fx:id="endMinute" alignment="CENTER" editable="false" prefHeight="25.0" prefWidth="40.0">
-                     <HBox.margin>
-                        <Insets left="5.0" />
-                     </HBox.margin>
-                  </TextField>
+                  </TextArea>
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">

@@ -1,5 +1,8 @@
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -15,7 +19,8 @@ import javafx.stage.WindowEvent;
 public class AddScreeningController {
 	@FXML private Label movieLabel;
 	@FXML private DatePicker startDate;
-	@FXML private TextField startHour, startMinute, extraMinutes, endHour, endMinute, theater;
+	@FXML private TextField startHour, startMinute, extraMinutes, theater;
+	@FXML private TextArea notes;
 	@FXML private ChoiceBox<Cinema> cinemaChoice;
 	
 	private FilmFestival ff;
@@ -43,14 +48,33 @@ public class AddScreeningController {
 	private void handleConfirm() {
 		System.out.println("AddScreening->Confirm");
 		Screening s = makeScreening();
-		if(s != null)
-			ff.addScreen(s);
+		if(s == null) return;
+		ff.addScreen(s);
 		((Stage) movieLabel.getScene().getWindow()).close();
 	}
 	
 	private Screening makeScreening() {
 		if(movie == null) return null;
-		return null;
+		Screening s = null;
+		LocalDate date = startDate.getValue();
+		try {
+			LocalTime time = LocalTime.of(Integer.parseInt(startHour.getText()), 
+					Integer.parseInt(startMinute.getText()));
+			LocalDateTime start = LocalDateTime.of(date, time);
+			s = new Screening(movie, start);
+		} catch(NumberFormatException | DateTimeException e) {
+			System.err.println("ORA INSERITA NON VALIDA");
+		}
+		try {
+			if(s != null)
+				s.setMinutesToWait(Integer.parseInt(extraMinutes.getText()));
+		} catch(NumberFormatException e) {
+			s = null;
+			System.err.println("INSERISCI UN NUMERO");
+		}
+		if(s != null)
+			s.setNotes(notes.getText());
+		return s;
 	}
 	
 	private void initView() {
