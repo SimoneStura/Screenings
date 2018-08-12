@@ -14,7 +14,7 @@ public class AddScreeningController {
 	@FXML private Label movieLabel;
 	@FXML private TextField startDay, startMonth, startYear, startHour, startMinute, extraMinutes,
 			endHour, endMinute, theater;
-	@FXML private ChoiceBox<Cinema> cinema;
+	@FXML private ChoiceBox<Cinema> cinemaChoice;
 	
 	private FilmFestival ff;
 	private Movie movie;
@@ -35,20 +35,28 @@ public class AddScreeningController {
 	private void handleAddCinema() {
 		System.out.println("AddScreening->AddCinema");
 		
-		((Stage) movieLabel.getScene().getWindow()).close();
 	}
 	
 	@FXML
 	private void handleConfirm() {
 		System.out.println("AddScreening->Confirm");
 		Screening s = makeScreening();
-		ff.addScreen(s);
+		if(s != null)
+			ff.addScreen(s);
 		((Stage) movieLabel.getScene().getWindow()).close();
 	}
 	
 	private Screening makeScreening() {
 		if(movie == null) return null;
 		return null;
+	}
+	
+	private void initView() {
+		String ml = "Proiezione per ";
+		movieLabel.setText(ml + movie);
+		ff.addCinema(new Cinema("Massimo"));
+		ff.addCinema(new Cinema("Reposi"));
+		cinemaChoice.getItems().addAll(ff.getCinemas());
 	}
 	
 	public static void display(String title, FilmFestival ff, Movie m) {
@@ -64,6 +72,8 @@ public class AddScreeningController {
         window.setWidth(800);
         window.setHeight(600);
         window.setOnCloseRequest((WindowEvent event) -> {controller.handleCancel();});
+        
+        controller.initView();
 
         window.show();
         } catch(IOException e) {e.printStackTrace();}

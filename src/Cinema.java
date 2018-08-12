@@ -38,4 +38,8 @@ public class Cinema implements Comparable<Cinema>{
 	public int compareTo(Cinema c) {
 		return name.compareTo(c.name);
 	}
+	
+	public String toString() {
+		return name;
+	}
 }

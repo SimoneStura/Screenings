@@ -25,6 +25,8 @@ public class ScreeningScheduler extends Application {
         stage.setScene(new Scene(loader.load()));
         stage.setOnCloseRequest((WindowEvent event) -> {fFController.handleExitAction();});
         stage.setTitle("ScreeSched");
+        stage.setWidth(960);
+        stage.setHeight(720);
         stage.show();
 
 	}

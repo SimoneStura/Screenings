@@ -10,9 +10,9 @@ public class FilmFestival {
 	private LocalDate firstDay = null;
 	private LocalDate lastDay = null;
 	private int minimumToWait;
-	private List<Cinema> cinemas = new ArrayList<>();
 	private SortedSet<Screening> shows = new TreeSet<>();
 	private ObservableList<Movie> movies = FXCollections.observableArrayList();
+	private ObservableList<Cinema> cinemas = FXCollections.observableArrayList();
 	private Map<Movie,ObservableList<Screening>> screens = new HashMap<>();
 	private List<Conflict<Screening>> confl = new ArrayList<>();
 	
@@ -87,7 +87,7 @@ public class FilmFestival {
 			lastDay = newDate;
 	}
 	
-	public List<Cinema> getCinemas() {
+	public ObservableList<Cinema> getCinemas() {
 		return cinemas;
 	}
 	
