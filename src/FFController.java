@@ -11,8 +11,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 //import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.*;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class FFController implements Initializable {
 	
@@ -45,6 +46,7 @@ public class FFController implements Initializable {
 	private void handleOpenAction() {
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Choose a file");
+		fc.getExtensionFilters().add(new ExtensionFilter("Festival files", "*.fes"));
 		File file = fc.showOpenDialog(new Stage());
 		if(file != null) {
 			saveFile = file;
@@ -67,6 +69,7 @@ public class FFController implements Initializable {
 	private void handleSaveAsAction() {
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Choose a file");
+		fc.getExtensionFilters().add(new ExtensionFilter("Festival files", "*.fes"));
 		File file = fc.showSaveDialog(new Stage());
 		if(file != null)
 			dm.saveFilmFestival(file);
@@ -133,6 +136,7 @@ public class FFController implements Initializable {
 		columnTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
 		columnYear.setCellValueFactory(new PropertyValueFactory<>("year"));
 		columnRuntime.setCellValueFactory(new PropertyValueFactory<>("runtime"));
+		columnNumScreens.setCellValueFactory(new PropertyValueFactory<>("numScreens"));
 		
 		moviesView.setItems(ff.getMovies());
 	}

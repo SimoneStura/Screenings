@@ -45,19 +45,22 @@ public class FilmFestival {
 		return minimumToWait;
 	}
 	
-	public boolean addMovie(Movie m) {
-		if(movies.contains(m)) return false;
+	public Movie addMovie(Movie m) {
+		for(Movie movie : movies)
+			if(movie.equals(m))
+				return movie;
 		movies.add(m);
 		screens.put(m, FXCollections.observableArrayList());
-		return true;
+		return m;
 	}
 	
 	public boolean addScreen(Screening s) {
 		if(!shows.add(s)) return false;
 		updateDays(s.getStartTime().toLocalDate());
-		Movie m = s.getM();
-		addMovie(m);
-		screens.get(m).add(s);
+		Movie m = addMovie(s.getM());
+		List<Screening> screenList = screens.get(m);
+		screenList.add(s);
+		m.setNumScreens(screenList.size());
 		for(Screening screen : shows) {
 			if(screen.gap(s) < 0) break;
 			if(!(screen.getM().equals(m)) && Screening.isConflict(s, screen))

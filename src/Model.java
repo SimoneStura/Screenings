@@ -1,5 +1,4 @@
 import java.io.File;
-import java.time.LocalDateTime;
 import java.io.*;
 import java.util.*;
 
@@ -9,7 +8,6 @@ public class Model extends Observable {
 	
 	public FilmFestival newFilmFestival(String name, int minimumBtwMovies) {
 		ff = new FilmFestival(name, minimumBtwMovies);
-		ff.addScreen(new Screening(new Movie("La La Land", 2016, 128), LocalDateTime.of(2015,10,21,17,0)));
 		return ff;
 	}
 	
@@ -39,6 +37,7 @@ public class Model extends Observable {
                     new FileOutputStream(file)));
 			FilmFestivalSerialize ffs = new FilmFestivalSerialize(ff);
             oos.writeObject(ffs);
+            saveFile = file;
             oos.close();
 		} catch(IOException e) {
 			e.printStackTrace();
