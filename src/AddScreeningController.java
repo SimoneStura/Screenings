@@ -1,9 +1,11 @@
 import java.io.IOException;
+import java.time.LocalDate;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
@@ -12,8 +14,8 @@ import javafx.stage.WindowEvent;
 
 public class AddScreeningController {
 	@FXML private Label movieLabel;
-	@FXML private TextField startDay, startMonth, startYear, startHour, startMinute, extraMinutes,
-			endHour, endMinute, theater;
+	@FXML private DatePicker startDate;
+	@FXML private TextField startHour, startMinute, extraMinutes, endHour, endMinute, theater;
 	@FXML private ChoiceBox<Cinema> cinemaChoice;
 	
 	private FilmFestival ff;
@@ -54,8 +56,11 @@ public class AddScreeningController {
 	private void initView() {
 		String ml = "Proiezione per ";
 		movieLabel.setText(ml + movie);
-		ff.addCinema(new Cinema("Massimo"));
-		ff.addCinema(new Cinema("Reposi"));
+		LocalDate date = ff.getFirstDay();
+		if(date == null)
+			startDate.setValue(LocalDate.now());
+		else
+			startDate.setValue(date);
 		cinemaChoice.getItems().addAll(ff.getCinemas());
 	}
 	
