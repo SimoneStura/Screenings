@@ -1,3 +1,4 @@
+
 import java.time.LocalDateTime;
 
 public interface PlacedOverTime<E> extends Comparable<E> {

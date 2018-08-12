@@ -1,3 +1,4 @@
+
 import java.io.File;
 //import java.io.IOException;
 import java.net.URL;
@@ -85,6 +86,7 @@ public class FFController implements Initializable {
 	
 	@FXML
 	private void handleAddMovie() {
+		AddMovieController.display("Nuovo Film", ff);
 		System.out.println("add movie");
 	}
 	
