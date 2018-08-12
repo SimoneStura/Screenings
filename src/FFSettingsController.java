@@ -18,13 +18,14 @@ public class FFSettingsController {
 	
 	@FXML
 	private void handleCancel() {
-		ff = null;
 		System.out.println("FFSettings->Cancel");
+		ff = null;
 		((Stage) ffName.getScene().getWindow()).close();
 	}
 	
 	@FXML
 	private void handleConfirm() {
+		System.out.println("FFSettings->Confirm");
         if(ffName.getText() == "") {
         	System.out.println("Devi scrivere qualcosa!");
         	return;

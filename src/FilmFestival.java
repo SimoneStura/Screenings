@@ -10,7 +10,7 @@ public class FilmFestival {
 	private LocalDate firstDay = null;
 	private LocalDate lastDay = null;
 	private int minimumToWait;
-	
+	private List<Cinema> cinemas = new ArrayList<>();
 	private SortedSet<Screening> shows = new TreeSet<>();
 	private ObservableList<Movie> movies = FXCollections.observableArrayList();
 	private Map<Movie,ObservableList<Screening>> screens = new HashMap<>();
@@ -46,6 +46,11 @@ public class FilmFestival {
 		return minimumToWait;
 	}
 	
+	public void addCinema(Cinema cin) {
+		if(cinemas.contains(cin)) return;
+		cinemas.add(cin);
+	}
+	
 	public Movie addMovie(Movie m) {
 		for(Movie movie : movies)
 			if(movie.equals(m))
@@ -57,7 +62,12 @@ public class FilmFestival {
 	
 	public boolean addScreen(Screening s) {
 		if(!shows.add(s)) return false;
+		
 		updateDays(s.getStartTime().toLocalDate());
+		
+		if(s.getCinema() != null) 
+			addCinema(s.getCinema());
+		
 		Movie m = addMovie(s.getM());
 		List<Screening> screenList = screens.get(m);
 		screenList.add(s);
@@ -75,6 +85,10 @@ public class FilmFestival {
 			firstDay = newDate;
 		if(lastDay == null || newDate.compareTo(lastDay) > 0)
 			lastDay = newDate;
+	}
+	
+	public List<Cinema> getCinemas() {
+		return cinemas;
 	}
 	
 	public SortedSet<Screening> getShows() {

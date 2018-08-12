@@ -20,19 +20,37 @@ public class AddMovieController {
 	@FXML
 	private void handleCancel() {
 		System.out.println("AddMovie->Cancel");
+		
 		((Stage) title.getScene().getWindow()).close();
 	}
 	
 	@FXML
 	private void handleAddScreening() {
 		System.out.println("AddMovie->AddScreening");
+		Movie m = makeMovie();
+		ff.addMovie(m);
+		AddScreeningController.display("Nuova Proiezione", ff, m);
 		((Stage) title.getScene().getWindow()).close();
 	}
 	
 	@FXML
 	private void handleConfirm() {
 		System.out.println("AddMovie->Confirm");
+		Movie m = makeMovie();
+		ff.addMovie(m);
 		((Stage) title.getScene().getWindow()).close();
+	}
+	
+	private Movie makeMovie() {
+		String mTitle = title.getText();
+		int mYear = Integer.parseInt(year.getText());
+		int mRuntime = Integer.parseInt(runtime.getText());
+		Movie m = new Movie(mTitle, mYear, mRuntime);
+		
+		m.setDirectedBy(directors.getText());
+		m.setSection(section.getText());
+		
+		return m;
 	}
 	
 	public static void display(String title, FilmFestival ff) {
