@@ -49,29 +49,39 @@ public class AddCinemaController {
 	@FXML
 	private void handleCancel() {
 		System.out.println("AddCinema->Cancel");
+		
 		((Stage) cinemaName.getScene().getWindow()).close();
 	}
 	
 	@FXML
 	private void handleConfirm() {
 		System.out.println("AddCinema->Confirm");
+		
+		Cinema c = makeCinema();
+		if(c == null) return;
+        ff.addCinema(c);
+        
+		((Stage) cinemaName.getScene().getWindow()).close();
+	}
+	
+	private Cinema makeCinema() {
         if(cinemaName.getText() == "") {
         	System.out.println("Devi scrivere qualcosa!");
-        	return;
+        	return null;
         }
         Cinema c = new Cinema(cinemaName.getText());
         try {
         	for(int i = 0; i < cinemaList.size(); i++) {
-        		Cinema other = cinemaList.get(0);
-        		c.setDistance(other, Integer.parseInt(distance[i].getText()));
+        		Cinema other = cinemaList.get(i);
+        		int dist = Integer.parseInt(distance[i].getText());
+        		c.setDistance(other, dist);
+        		other.setDistance(c, dist);
         	}
         } catch(NumberFormatException e) {
         	System.err.println("Inserisci un numero");
-        	return;
+        	return null;
         }
-        
-        ff.addCinema(c);
-		((Stage) cinemaName.getScene().getWindow()).close();
+		return c;
 	}
 	
 	public static void display(String title, FilmFestival ff) {

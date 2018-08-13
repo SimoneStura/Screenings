@@ -75,20 +75,26 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 		return minutesToWait;
 	}
 	
-	public int getMinutesExtra() {
-		return Math.max(minimumToWait, minutesToWait);
-	}
-	
 	public String getNotes() {
 		return notes;
 	}
 	
+	public int extraMinutes() {
+		return Math.max(minimumToWait, minutesToWait);
+	}
+	
+	public int cinemaDistance(Screening s) {
+		if(s == null || this.cinema == null || s.cinema == null)
+			return 0;
+		return Math.max(this.cinema.getDistance(s.cinema), s.cinema.getDistance(this.cinema));
+	}
+	
 	public int gap(Screening s) {
 		int distance1 = ((int) (ChronoUnit.MINUTES.between(this.endTime, s.startTime)))
-				- this.getMinutesExtra();
+				- this.extraMinutes() - this.cinemaDistance(s);
 		if(distance1 > 0) return distance1;
 		int distance2 = ((int) (ChronoUnit.MINUTES.between(this.startTime, s.endTime)))
-				+ s.getMinutesExtra();
+				+ s.extraMinutes() + s.cinemaDistance(this);
 		if(distance2 < 0) return distance2;
 		return 0;
 	}

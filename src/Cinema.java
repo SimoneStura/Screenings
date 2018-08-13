@@ -24,6 +24,7 @@ public class Cinema implements Comparable<Cinema>{
 	}
 	
 	public int getDistance(Cinema c) {
+		if(c == null || c.equals(this)) return 0;
 		Integer d = distance.get(c);
 		if(d == null) return 0;
 		return d.intValue();
