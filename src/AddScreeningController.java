@@ -41,7 +41,8 @@ public class AddScreeningController {
 	@FXML
 	private void handleAddCinema() {
 		System.out.println("AddScreening->AddCinema");
-		
+		AddCinemaController.display("Nuovo Cinema", ff);
+		cinemaChoice.getItems().setAll(ff.getCinemas());
 	}
 	
 	@FXML
@@ -68,6 +69,13 @@ public class AddScreeningController {
 		try {
 			if(s != null)
 				s.setMinutesToWait(Integer.parseInt(extraMinutes.getText()));
+		} catch(NumberFormatException e) {
+			s = null;
+			System.err.println("INSERISCI UN NUMERO");
+		}
+		try {
+			if(s != null && cinemaChoice.getValue() != null)
+				s.setCinema(cinemaChoice.getValue(), Integer.parseInt(theater.getText()));
 		} catch(NumberFormatException e) {
 			s = null;
 			System.err.println("INSERISCI UN NUMERO");
