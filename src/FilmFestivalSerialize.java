@@ -4,7 +4,7 @@ import java.io.Serializable;
 public class FilmFestivalSerialize implements Serializable {
 	private static final long serialVersionUID = 8858739803531137363L;
 	private String name;
-	private int minimumToWait;
+	private int minimumToWait, priorityClasses;
 	
 	private Screening shows[];
 	private Movie movies[];
@@ -12,6 +12,7 @@ public class FilmFestivalSerialize implements Serializable {
 	
 	public FilmFestivalSerialize(FilmFestival ff) {
 		name = ff.getName();
+		priorityClasses = ff.getPriorityClasses();
 		minimumToWait = ff.getMinimumToWait();
 		shows = new Screening[ff.getShows().size()];
 		movies = new Movie[ff.getMovies().size()];
@@ -23,6 +24,7 @@ public class FilmFestivalSerialize implements Serializable {
 	
 	public FilmFestival observe() {
 		FilmFestival observed = new FilmFestival(name, minimumToWait);
+		observed.setPriorityClasses(priorityClasses);
 		for(Screening s : shows)
 			observed.addScreen(s);
 		for(Movie m : movies)

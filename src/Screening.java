@@ -9,6 +9,7 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	
 	private Movie m;
 	private LocalDateTime startTime;
+	private int priority;
 	private Cinema cinema;
 	private int theater;
 	private int minimumToWait = 0;
@@ -22,10 +23,17 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	public Screening(Movie m, LocalDateTime startTime) {
 		this.m = m;
 		setStartTime(startTime);
+		priority = 1;
+		minimumToWait = 0;
+		minutesToWait = 0;
 	}
 	
 	public void setStartTime(LocalDateTime startTime) {
 		this.startTime = startTime;
+	}
+	
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 	
 	public void setCinema(Cinema cinema, int theater) {
@@ -55,6 +63,10 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	
 	public LocalDateTime getEndTime() {
 		return startTime.plusMinutes(m.getRuntime());
+	}
+	
+	public int getPriority() {
+		return priority;
 	}
 	
 	public Cinema getCinema() {

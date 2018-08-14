@@ -3,7 +3,9 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -17,18 +19,30 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class AddScreeningController {
-	@FXML private Label movieLabel;
+	@FXML private Label movieLabel, endTime;
 	@FXML private DatePicker startDate;
 	@FXML private TextField startHour, startMinute, extraMinutes, theater;
 	@FXML private TextArea notes;
+	@FXML private ChoiceBox<Integer> priorityBox;
 	@FXML private ChoiceBox<Cinema> cinemaChoice;
 	
 	private FilmFestival ff;
 	private Movie movie;
+	private static DateTimeFormatter hour = DateTimeFormatter.ofPattern("HH : mm");
 	
 	public AddScreeningController(FilmFestival ff, Movie movie) {
 		this.ff = ff;
 		this.movie = movie;
+	}
+	
+	@FXML
+	private void updateTime(Event event) {
+		try {
+			LocalTime startTime = LocalTime.of(Integer.parseInt(startHour.getText()), 
+					Integer.parseInt(startMinute.getText()));
+			endTime.setText(startTime.plusMinutes(movie.getRuntime()).format(hour));
+			System.out.println(event.getEventType());
+		} catch(NumberFormatException | DateTimeException e) {}
 	}
 	
 	@FXML
@@ -67,8 +81,10 @@ public class AddScreeningController {
 			System.err.println("ORA INSERITA NON VALIDA");
 		}
 		try {
-			if(s != null)
+			if(s != null) {
 				s.setMinutesToWait(Integer.parseInt(extraMinutes.getText()));
+				s.setMinimumToWait(ff.getMinimumToWait());
+			}
 		} catch(NumberFormatException e) {
 			s = null;
 			System.err.println("INSERISCI UN NUMERO");
@@ -80,8 +96,10 @@ public class AddScreeningController {
 			s = null;
 			System.err.println("INSERISCI UN NUMERO");
 		}
-		if(s != null)
+		if(s != null) {
+			s.setPriority(priorityBox.getValue());
 			s.setNotes(notes.getText());
+		}
 		return s;
 	}
 	
@@ -93,6 +111,10 @@ public class AddScreeningController {
 			startDate.setValue(LocalDate.now());
 		else
 			startDate.setValue(date);
+		for(int i = 0; i <= ff.getPriorityClasses(); i++)
+			priorityBox.getItems().add(i);
+		priorityBox.getItems().remove(0);
+		priorityBox.setValue(1);
 		cinemaChoice.getItems().addAll(ff.getCinemas());
 	}
 	

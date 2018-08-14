@@ -12,12 +12,12 @@ import javafx.beans.property.StringProperty;
 public class Movie implements Comparable<Movie>, Serializable {
 	private static final long serialVersionUID = 5781125133996852924L;
 	
-	private StringProperty title;
-	private IntegerProperty year;
-	private IntegerProperty runtime;
-	private StringProperty directedBy;
-	private StringProperty section;
-	private IntegerProperty numScreens;
+	transient private StringProperty title;
+	transient private IntegerProperty year;
+	transient private IntegerProperty runtime;
+	transient private StringProperty directedBy;
+	transient private StringProperty section;
+	transient private IntegerProperty numScreens;
 	
 	public Movie(String title, int year, int runtime) {
 		init();

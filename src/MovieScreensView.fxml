@@ -28,10 +28,10 @@
           <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Data" />
           <TableColumn fx:id="startTimeColumn" prefWidth="75.0" text="Ora Inizio" />
             <TableColumn fx:id="endTimeColumn" prefWidth="75.0" text="Ora Fine" />
+            <TableColumn fx:id="priorityColumn" prefWidth="54.0" text="Prioritá" />
             <TableColumn fx:id="cinemaColumn" prefWidth="75.0" text="Cinema" />
-            <TableColumn fx:id="theaterColumn" prefWidth="38.0" text="Sala" />
-            <TableColumn fx:id="extraMinutesColumn" prefWidth="85.0" text="Minuti Extra" />
-            <TableColumn fx:id="notesColumn" prefWidth="229.0" text="Note" />
+            <TableColumn fx:id="extraMinutesColumn" prefWidth="84.0" text="Minuti Extra" />
+            <TableColumn fx:id="notesColumn" prefWidth="216.0" text="Note" />
         </columns>
          <VBox.margin>
             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />

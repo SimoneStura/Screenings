@@ -19,11 +19,9 @@ public class MovieScreensController {
 	
 	@FXML private Label movieInfo;
 	@FXML private TableView<Screening> screensView;
-	@FXML private TableColumn<Screening, String> dateColumn;
-	@FXML private TableColumn<Screening, String> startTimeColumn, endTimeColumn;
-	@FXML private TableColumn<Screening, Cinema> cinemaColumn;
-	@FXML private TableColumn<Screening, Integer> theaterColumn, extraMinutesColumn;
-	@FXML private TableColumn<Screening, String> notesColumn;
+	@FXML private TableColumn<Screening, String> dateColumn, startTimeColumn, endTimeColumn;
+	@FXML private TableColumn<Screening, Integer> priorityColumn, extraMinutesColumn;
+	@FXML private TableColumn<Screening, String> cinemaColumn, notesColumn;
 	
 	private static DateTimeFormatter date = DateTimeFormatter.ofPattern("EEE dd/MM/yyyy");
 	private static DateTimeFormatter hour = DateTimeFormatter.ofPattern("HH:mm");
@@ -73,8 +71,12 @@ public class MovieScreensController {
 			Screening s = cellData.getValue();
 			return new SimpleStringProperty(s.getEndTime().format(hour));
 		});
-		cinemaColumn.setCellValueFactory(new PropertyValueFactory<>("cinema"));
-		theaterColumn.setCellValueFactory(new PropertyValueFactory<>("theater"));
+		cinemaColumn.setCellValueFactory(cellData -> {
+			Screening s = cellData.getValue();
+			if(s.getCinema() == null) return new SimpleStringProperty();
+			return new SimpleStringProperty(s.getCinema() + " " + s.getTheater());
+		});
+		priorityColumn.setCellValueFactory(new PropertyValueFactory<>("priority"));
 		extraMinutesColumn.setCellValueFactory(new PropertyValueFactory<>("minutesToWait"));
 		notesColumn.setCellValueFactory(new PropertyValueFactory<>("notes"));
 		

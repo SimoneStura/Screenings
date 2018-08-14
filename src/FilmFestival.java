@@ -9,7 +9,7 @@ public class FilmFestival {
 	private String name;
 	private LocalDate firstDay = null;
 	private LocalDate lastDay = null;
-	private int minimumToWait;
+	private int minimumToWait, priorityClasses;
 	private SortedSet<Screening> shows = new TreeSet<>();
 	private ObservableList<Movie> movies = FXCollections.observableArrayList();
 	private ObservableList<Cinema> cinemas = FXCollections.observableArrayList();
@@ -19,15 +19,19 @@ public class FilmFestival {
 	public FilmFestival(String name, int minimumToWait) {
 		setName(name);
 		setMinimumToWait(minimumToWait);
+		priorityClasses = 3;
 	}
 	
 	public void setName(String name) {
 		this.name = name;
-		
 	}
 	
 	public void setMinimumToWait(int minimumToWait) {
 		this.minimumToWait = minimumToWait;
+	}
+	
+	public void setPriorityClasses(int priorityClasses) {
+		this.priorityClasses = priorityClasses;
 	}
 	
 	public String getName() {
@@ -44,6 +48,10 @@ public class FilmFestival {
 	
 	public int getMinimumToWait() {
 		return minimumToWait;
+	}
+	
+	public int getPriorityClasses() {
+		return priorityClasses;
 	}
 	
 	public void addCinema(Cinema cin) {
