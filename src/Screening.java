@@ -9,7 +9,6 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	
 	private Movie m;
 	private LocalDateTime startTime;
-	private LocalDateTime endTime;
 	private Cinema cinema;
 	private int theater;
 	private int minimumToWait = 0;
@@ -27,7 +26,6 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	
 	public void setStartTime(LocalDateTime startTime) {
 		this.startTime = startTime;
-		endTime = startTime.plusMinutes(m.getRuntime());
 	}
 	
 	public void setCinema(Cinema cinema, int theater) {
@@ -56,7 +54,7 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	}
 	
 	public LocalDateTime getEndTime() {
-		return endTime;
+		return startTime.plusMinutes(m.getRuntime());
 	}
 	
 	public Cinema getCinema() {
@@ -90,17 +88,17 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	}
 	
 	public int gap(Screening s) {
-		int distance1 = ((int) (ChronoUnit.MINUTES.between(this.endTime, s.startTime)))
+		int distance1 = ((int) (ChronoUnit.MINUTES.between(this.getEndTime(), s.startTime)))
 				- this.extraMinutes() - this.cinemaDistance(s);
 		if(distance1 > 0) return distance1;
-		int distance2 = ((int) (ChronoUnit.MINUTES.between(this.startTime, s.endTime)))
+		int distance2 = ((int) (ChronoUnit.MINUTES.between(this.startTime, s.getEndTime())))
 				+ s.extraMinutes() + s.cinemaDistance(this);
 		if(distance2 < 0) return distance2;
 		return 0;
 	}
 	
 	public String toString() {
-		return startTime.format(dateHour) + " - " + endTime.format(hour);
+		return startTime.format(dateHour) + " - " + getEndTime().format(hour);
 	}
 	
 	public boolean equals(Object o) {
@@ -114,7 +112,7 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 	public int compareTo(Screening s) {
 		int cmp = 0;
 		if(startTime.compareTo(s.startTime) == 0) {
-			if(endTime.compareTo(s.endTime) == 0) {
+			if(getEndTime().compareTo(s.getEndTime()) == 0) {
 				if(m.compareTo(s.m) == 0) {
 					if(cinema == null)
 						cmp = 0;
@@ -126,7 +124,7 @@ public class Screening implements PlacedOverTime<Screening>, Serializable{
 				else
 					cmp = m.compareTo(s.m);
 			} else
-				cmp = endTime.compareTo(s.endTime);
+				cmp = getEndTime().compareTo(s.getEndTime());
 		} else
 			cmp = startTime.compareTo(s.startTime);
 		return cmp;

@@ -3,6 +3,7 @@ import java.util.*;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -17,7 +18,6 @@ public class AddCinemaController {
 	@FXML private TextField cinemaName;
 	@FXML private Label explainLabel;
 	@FXML private GridPane distanceGrid;
-	private Label otherCinema[];
 	private TextField distance[];
 	
 	public AddCinemaController(FilmFestival ff) {
@@ -30,20 +30,23 @@ public class AddCinemaController {
 			explainLabel.setVisible(false);
 			return;
 		}
-		otherCinema = new Label[cinemaList.size()];
 		distance = new TextField[cinemaList.size()];
-		for(int i = 0; i < cinemaList.size(); i++) {
-			otherCinema[i] = new Label(cinemaList.get(i).getName());
-			distance[i] = new TextField("0");
-			distance[i].setPrefWidth(40.0);
-			HBox left = new HBox();
-			left.getChildren().add(otherCinema[i]);
-			left.setAlignment(Pos.CENTER);
-			HBox right = new HBox();
-			right.getChildren().addAll(distance[i], new Label("minuti"));
-			right.setAlignment(Pos.CENTER);
-			distanceGrid.addRow(i, left, right);
-		}
+		for(int i = 0; i < cinemaList.size(); i++)
+			addGridRow(i, cinemaList.get(i).getName());
+	}
+	
+	private void addGridRow(int indexRow, String otherCinema) {
+		distance[indexRow] = new TextField("0");
+		distance[indexRow].setPrefWidth(40.0);
+		HBox left = new HBox();
+		left.getChildren().add(new Label(otherCinema));
+		left.setAlignment(Pos.CENTER);
+		left.setPadding(new Insets(5.0));
+		HBox right = new HBox();
+		right.getChildren().addAll(distance[indexRow], new Label("minuti"));
+		right.setAlignment(Pos.CENTER);
+		right.setPadding(new Insets(5.0));
+		distanceGrid.addRow(indexRow, left, right);
 	}
 	
 	@FXML

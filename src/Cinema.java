@@ -1,8 +1,10 @@
 
 import java.util.Map;
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Cinema implements Comparable<Cinema>{
+public class Cinema implements Comparable<Cinema>, Serializable{
+	private static final long serialVersionUID = -3452162959024070352L;
 	
 	private String name;
 	private Map<Cinema, Integer> distance = new HashMap<>();

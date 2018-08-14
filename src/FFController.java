@@ -1,6 +1,5 @@
 
 import java.io.File;
-//import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -8,9 +7,7 @@ import java.util.*;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-//import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-//import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.*;
@@ -82,6 +79,16 @@ public class FFController implements Initializable {
 		Platform.exit();
 	}
 	
+	@FXML
+	public void handleAllCinema() {
+		AllCinemaController.display(ff);
+	}
+	
+	@FXML
+	public void handleAllScreening() {
+		AllScreeningController.display(ff);
+	}
+	
 	//BUTTONS HANDLERS
 	
 	@FXML
@@ -143,6 +150,17 @@ public class FFController implements Initializable {
 		columnNumScreens.setCellValueFactory(new PropertyValueFactory<>("numScreens"));
 		
 		moviesView.setItems(ff.getMovies());
+		
+		moviesView.setRowFactory( tv -> {
+		    TableRow<Movie> row = new TableRow<>();
+		    row.setOnMouseClicked(event -> {
+		        if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+		            Movie rowData = row.getItem();
+		            MovieScreensController.display(ff, rowData);
+		        }
+		    });
+		    return row;
+		});
 	}
 	
 	private void selectionListener() {

@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox minHeight="300.0" minWidth="400.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<VBox minHeight="300.0" minWidth="400.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -38,7 +38,8 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Strumenti">
           <items>
-            <MenuItem mnemonicParsing="false" text="Tutte le Proiezioni" />
+            <MenuItem mnemonicParsing="false" onAction="#handleAllScreening" text="Tutte le Proiezioni" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleAllCinema" text="Tutti i Cinema" />
             <MenuItem disable="true" mnemonicParsing="false" text="Importa Scheduling" />
           </items>
         </Menu>
