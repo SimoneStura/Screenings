@@ -1,8 +1,10 @@
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,6 +21,7 @@ public class MovieScreensController {
 	
 	@FXML private Label movieInfo;
 	@FXML private TableView<Screening> screensView;
+	@FXML private TableColumn<Screening, CheckBox> useColumn;
 	@FXML private TableColumn<Screening, String> dateColumn, startTimeColumn, endTimeColumn;
 	@FXML private TableColumn<Screening, Integer> priorityColumn, extraMinutesColumn;
 	@FXML private TableColumn<Screening, String> cinemaColumn, notesColumn;
@@ -30,6 +33,11 @@ public class MovieScreensController {
 		this.m = m;
 		this.ff = ff;
 		screens = ff.getScreens(m);
+	}
+	
+	@FXML void handleUseAction() {
+		Screening s = screensView.getSelectionModel().getSelectedItem();
+		s.hide(!s.isHidden());
 	}
 	
 	@FXML
@@ -59,6 +67,15 @@ public class MovieScreensController {
 	}
 	
 	private void setScreensView() {
+		useColumn.setCellValueFactory(cellData -> {
+			Screening s = cellData.getValue();
+			CheckBox use = new CheckBox();
+			use.setSelected(!s.isHidden());
+			use.addEventHandler(ActionEvent.ACTION, (ActionEvent) -> {
+				screensView.getSelectionModel().select(s);
+				handleUseAction();});
+			return new SimpleObjectProperty<CheckBox>(use);
+		});
 		dateColumn.setCellValueFactory(cellData -> {
 			Screening s = cellData.getValue();
 			return new SimpleStringProperty(s.getStartTime().format(date));

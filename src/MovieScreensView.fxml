@@ -25,13 +25,14 @@
       </HBox>
       <TableView fx:id="screensView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
         <columns>
+            <TableColumn fx:id="useColumn" editable="false" onEditCommit="#handleUseAction" prefWidth="40.0" text="Usa" />
           <TableColumn fx:id="dateColumn" prefWidth="100.0" text="Data" />
           <TableColumn fx:id="startTimeColumn" prefWidth="75.0" text="Ora Inizio" />
             <TableColumn fx:id="endTimeColumn" prefWidth="75.0" text="Ora Fine" />
             <TableColumn fx:id="priorityColumn" prefWidth="54.0" text="Prioritá" />
             <TableColumn fx:id="cinemaColumn" prefWidth="75.0" text="Cinema" />
             <TableColumn fx:id="extraMinutesColumn" prefWidth="84.0" text="Minuti Extra" />
-            <TableColumn fx:id="notesColumn" prefWidth="216.0" text="Note" />
+            <TableColumn fx:id="notesColumn" prefWidth="175.0" text="Note" />
         </columns>
          <VBox.margin>
             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
